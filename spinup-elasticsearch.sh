@@ -37,7 +37,7 @@ fi
 echo next_transport_port: $next_transport_port
 
 # consul discovery of any existing elasticsearch nodes
-unicast_hosts=$(curl -sS 192.168.1.167:8500/v1/catalog/service/elasticsearch | jq -jr '.[] | .ServiceAddress + ":" + "\(.ServicePort)" + ","' | sed 's/,$//')
+unicast_hosts=$(curl -sS 192.168.1.167:8500/v1/catalog/service/elasticsearch-transport | jq -jr '.[] | .ServiceAddress + ":" + "\(.ServicePort)" + ","' | sed 's/,$//')
 echo unicast_hosts: $unicast_hosts
 if [ -z "$unicast_hosts" ]; then
   unicast_hosts=$ip':'$next_transport_port
