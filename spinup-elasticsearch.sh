@@ -89,6 +89,7 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   #http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   #-d "$(printf '{"ID":"%s","Name":"elasticsearch","Address":"%s","Port":%s, "Check":{"HTTP": "http://%s:%s", "Interval": "10s"}}' $next_container $PRIVATE_IP $PRIVATE_PORT $PRIVATE_IP $PRIVATE_PORT)"
 
+  #"deregister_critical_service_after": "1m"
   echo curl -f --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   -d "$(printf '{
@@ -116,4 +117,3 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
     }
   }' $next_container $next_container $ip $next_transport_port $ip $next_http_port)"
 fi
-      #"deregister_critical_service_after": "1m"
