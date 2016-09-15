@@ -3,10 +3,9 @@
 # leonstrand@gmail.com
 
 
-#name='elasticsearch_loadbalancer_'
 #name='eslb'
 name='es'
-last_container=$(docker ps -f name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
+last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
 else
@@ -89,31 +88,82 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   #http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   #-d "$(printf '{"ID":"%s","Name":"elasticsearch","Address":"%s","Port":%s, "Check":{"HTTP": "http://%s:%s", "Interval": "10s"}}' $next_container $PRIVATE_IP $PRIVATE_PORT $PRIVATE_IP $PRIVATE_PORT)"
 
-  #"deregister_critical_service_after": "1m"
+  # register es transport
   echo curl -f --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   -d "$(printf '{
     "ID":"%s",
-    "Name":"elasticsearch",
+    "Name":"elasticsearch-transport",
     "Address":"%s",
     "Port":%s,
     "Check":{
       "HTTP": "http://%s:%s",
       "Interval": "10s"
     }
-  }' $next_container $ip $next_transport_port $ip $next_http_port)"
+  }' \
+  elasticsearch-transport-$ip:$next_transport_port \
+  $ip \
+  $next_transport_port \
+  $ip \
+  $next_transport_port)
+  "
 
   curl -f --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   -d "$(printf '{
     "ID":"%s",
-    "Node":"%s",
-    "Name":"elasticsearch",
+    "Name":"elasticsearch-transport",
     "Address":"%s",
     "Port":%s,
     "Check":{
       "HTTP": "http://%s:%s",
       "Interval": "10s"
     }
-  }' $next_container $next_container $ip $next_transport_port $ip $next_http_port)"
+  }' \
+  elasticsearch-transport-$ip:$next_transport_port \
+  $ip \
+  $next_transport_port \
+  $ip \
+  $next_transport_port)
+  "
+
+  # register es http
+  echo curl -f --retry 7 --retry-delay 3 \
+  http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
+  -d "$(printf '{
+    "ID":"%s",
+    "Name":"elasticsearch-http",
+    "Address":"%s",
+    "Port":%s,
+    "Check":{
+      "HTTP": "http://%s:%s",
+      "Interval": "10s"
+    }
+  }' \
+  elasticsearch-http-$ip:$next_http_port \
+  $ip \
+  $next_http_port \
+  $ip \
+  $next_http_port)
+  "
+
+  curl -f --retry 7 --retry-delay 3 \
+  http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
+  -d "$(printf '{
+    "ID":"%s",
+    "Name":"elasticsearch-http",
+    "Address":"%s",
+    "Port":%s,
+    "Check":{
+      "HTTP": "http://%s:%s",
+      "Interval": "10s"
+    }
+  }' \
+  elasticsearch-http-$ip:$next_http_port \
+  $ip \
+  $next_http_port \
+  $ip \
+  $next_http_port)
+  "
+
 fi
