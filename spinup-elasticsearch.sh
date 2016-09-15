@@ -57,7 +57,8 @@ docker run -d \
   -Dhttp.publish_port=$next_http_port \
   -Dtransport.publish_port=$next_transport_port \
   -Des.discovery.zen.ping.multicast.enabled=false \
-  -Des.discovery.zen.ping.unicast.hosts=$unicast_hosts
+  -Des.discovery.zen.ping.unicast.hosts=$unicast_hosts \
+  -Dindex.codec=best_compression
 "
   #-Des.node.master=false \
   #-Des.node.data=false \
