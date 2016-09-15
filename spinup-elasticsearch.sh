@@ -98,8 +98,7 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
     "Port":%s,
     "Check":{
       "HTTP": "http://%s:%s",
-      "Interval": "10s",
-      "Deregister_critical_service_after": "1m"
+      "Interval": "10s"
     }
   }' $next_container $ip $next_transport_port $ip $next_http_port)"
 
@@ -113,9 +112,8 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
     "Port":%s,
     "Check":{
       "HTTP": "http://%s:%s",
-      "Interval": "10s",
-      "Deregister_critical_service_after": "1m"
+      "Interval": "10s"
     }
   }' $next_container $next_container $ip $next_transport_port $ip $next_http_port)"
 fi
-      #"Deregister_critical_service_after": "1m"
+      #"deregister_critical_service_after": "1m"
