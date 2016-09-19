@@ -28,8 +28,8 @@ elasticsearch_hosts='['$elasticsearch_hosts']'
 echo elasticsearch_hosts: $elasticsearch_hosts
 
 mkdir -vp $directory/logstash/containers/$next_container
-#cp -vr $directory/logstash/config $directory/logstash/containers/$next_container
-#sed 's/REPLACE/'$elasticsearch_hosts'/' logstash/template/300-output-logstash.conf  | tee $directory/logstash/containers/$next_container/config/300-output-logstash.conf
+cp -vr $directory/logstash/config $directory/logstash/containers/$next_container
+sed 's/REPLACE/'$elasticsearch_hosts'/' logstash/template/300-output-logstash.conf  | tee $directory/logstash/containers/$next_container/config/300-output-logstash.conf
 
   #-v $directory/logstash/containers/$next_container/config:/etc/logstash/conf.d \
 command="
@@ -39,7 +39,7 @@ docker run -d \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
   logstash \
-  -f /config/logstash.conf
+  -f /config/
 "
 echo $command
 eval $command
