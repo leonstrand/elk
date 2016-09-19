@@ -106,7 +106,7 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   $ip \
   $next_transport_port \
   $ip \
-  $next_transport_port)
+  $next_http_port)
   "
 
   curl -f --retry 7 --retry-delay 3 \
@@ -125,7 +125,7 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   $ip \
   $next_transport_port \
   $ip \
-  $next_transport_port)
+  $next_http_port)
   "
 
   # register es http
