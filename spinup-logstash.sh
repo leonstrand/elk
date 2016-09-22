@@ -3,6 +3,8 @@
 # leonstrand@gmail.com
 
 
+echo
+
 name='ls'
 directory=$(pwd)
 last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
@@ -27,6 +29,7 @@ fi
 elasticsearch_hosts='['$elasticsearch_hosts']'
 echo elasticsearch_hosts: $elasticsearch_hosts
 
+[ -d $directory/logstash/containers/$next_container ] && rm -rv $directory/logstash/containers/$next_container
 mkdir -vp $directory/logstash/containers/$next_container
 cp -vr $directory/logstash/config $directory/logstash/containers/$next_container
 sed 's/REPLACE/'$elasticsearch_hosts'/' logstash/template/300-output-logstash.conf  | tee $directory/logstash/containers/$next_container/config/300-output-logstash.conf
@@ -39,7 +42,13 @@ docker run -d \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
   logstash \
-  -f /config/
+  -f /config/ \
+  --auto-reload
 "
 echo $command
 eval $command
+
+echo
+docker ps -f name=$name
+echo
+echo
