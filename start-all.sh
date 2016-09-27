@@ -5,9 +5,9 @@
 
 container_types='
 consul
-es
-ls
-kb
+elasticsearch
+logstash
+kibana
 '
 
 execute() {
