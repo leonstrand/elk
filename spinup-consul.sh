@@ -6,9 +6,9 @@
 name='consul-1'
 echo
 
-#interface='ens33'
 interface=$(ip -o link | awk '{print $2}' | egrep -v 'lo|loopback|docker' | tr -d :)
 echo $0: interface: $interface
+
 docker run \
   -d \
   --net=host \
