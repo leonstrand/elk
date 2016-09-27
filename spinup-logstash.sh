@@ -3,8 +3,6 @@
 # leonstrand@gmail.com
 
 
-echo
-
 name='logstash'
 directory=$(pwd)
 directory_logs=/pai-logs
@@ -14,27 +12,33 @@ ip=$(ip -o address | awk '$2 !~ /lo|docker/ && $3 ~ /inet$/ {print $4}' | cut -d
 service_name='logstash'
 
 
+echo
+
 # get list of server log directories
+echo
 echo $0: getting list of log directories, one per server
-servers=$(find /pai-logs -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
-echo servers: $servers
+servers=$(find $directory_logs -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+echo $0: servers: $servers
+
 # get list of passing logstash service ids
+echo
 echo $0: getting list of passing logstash service ids
 echo curl -sS http://$ip:8500/v1/health/service/$service_name?passing \| jq -r \''.[] .Service | .ID'\'
 service_ids=$(curl -sS http://$ip:8500/v1/health/service/$service_name?passing | jq -r '.[] .Service | .ID')
 echo service_ids: $service_ids
+
 # handle first unhandled server
+echo
 echo $0: seeking first unhandled server
 handled=0
 for server in $servers; do
-  #server_lower=$(echo $server | tr '[:upper:]' '[:lower:]')
   echo -n $0: server: $server\ 
-  #echo $0: server_lower: $server_lower
   # check consul to see if server not handled
-  #if [[ $service_ids != *$server_lower* ]]; then
   if [[ $service_ids != *$server* ]]; then
     echo not already handled
     # determine container name
+    echo
+    echo $0: determining container name
     last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
     if [ -z "$last_container" ]; then
       next_container=${name}-1
@@ -44,17 +48,21 @@ for server in $servers; do
     echo next_container: $next_container
 
     # discover elasticsearch nodes passing consul check
+    echo
+    echo $0: discovering elasticsearch nodes passing consul check
+    echo curl -sS $ip:8500/v1/catalog/service/elasticsearch-http?passing
     #elasticsearch_hosts=$(curl -sS $ip:8500/v1/catalog/service/elasticsearch-http | jq -jr '.[] | "\"" + .ServiceAddress + ":" + "\(.ServicePort)" + "\","' | sed 's/,$//')
     elasticsearch_hosts=$(curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | "\"" + .Address + ":" + "\(.Port)" + "\","' | sed 's/,$//')
     if [ -z "$elasticsearch_hosts" ]; then
-      echo $0: fatal: could not find any elasticsearch host via:
-      echo curl -sS $ip:8500/v1/catalog/service/elasticsearch-http
+      echo $0: fatal: could not find any elasticsearch host
       exit 1
     fi
     elasticsearch_hosts='['$elasticsearch_hosts']'
     echo elasticsearch_hosts: $elasticsearch_hosts
 
     # configure logstash
+    echo
+    echo $0: configuring logstash
     [ -d $directory/logstash/containers/$next_container ] && rm -rv $directory/logstash/containers/$next_container
     mkdir -vp $directory/logstash/containers/$next_container
     cp -vr $directory/logstash/config $directory/logstash/containers/$next_container
@@ -69,6 +77,7 @@ for server in $servers; do
 
       #-v $directory/logstash/containers/$next_container/config:/etc/logstash/conf.d \
     # spin up logstash container
+    echo
     echo $0: spinning up logstash container
     command="
     docker run -d \
@@ -82,7 +91,9 @@ for server in $servers; do
     "
     echo $command
     eval $command
+
     # register logstash
+    echo
     echo $0: registering logstash
     echo curl -v -X PUT http://192.168.1.167:8500/v1/agent/service/register \
       -d "$(printf '{
@@ -114,7 +125,6 @@ for server in $servers; do
       $server \
       $ip)
     "
-
     handled=1
     break
   else
@@ -127,5 +137,4 @@ fi
 
 echo
 docker ps -f name=$name
-echo
 echo
