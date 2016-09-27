@@ -3,8 +3,10 @@
 # leonstrand@gmail.com
 
 
-name='kb'
+name='kibana'
 directory=$(pwd)
+name_elasticsearch='elasticsearch'
+
 
 # determine container name
 last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
@@ -23,7 +25,7 @@ echo ip: $ip
 
 # select next free http port over $base_port
 base_port=10000
-last_http_port=$(for i in $(docker ps -qf name=$name); do docker port $i | awk '/^9200/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
+last_http_port=$(for i in $(docker ps -qf name=$name_elasticsearch); do docker port $i | awk '/^9200/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
 if [ -z "$last_http_port" ]; then
   next_http_port=$(expr $base_port + 9200 + 1)
 else
@@ -33,7 +35,7 @@ echo next_http_port: $next_http_port
 # TODO open port check
 
 # select next free transport port over $base_port
-last_transport_port=$(for i in $(docker ps -qf name=$name); do docker port $i | awk '/^9300/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
+last_transport_port=$(for i in $(docker ps -qf name=$name_elasticsearch); do docker port $i | awk '/^9300/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
 if [ -z "$last_transport_port" ]; then
   next_transport_port=$(expr $base_port + 9300 + 1)
 else
