@@ -4,11 +4,15 @@
 
 
 name='consul-1'
-echo
 
+echo
+echo
+echo $0: determining self ip address
 interface=$(ip -o link | awk '{print $2}' | egrep -v 'lo|loopback|docker' | tr -d :)
 echo $0: interface: $interface
 
+echo
+echo $0: starting consul container
 command="docker run
   -d
   --net=host
@@ -24,6 +28,6 @@ echo $command
 eval $command
 
 echo
-docker ps -f name=$name
 echo
+docker ps -f name=$name
 echo
