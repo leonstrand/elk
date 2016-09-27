@@ -3,8 +3,7 @@
 # leonstrand@gmail.com
 
 
-#name='eslb'
-name='es'
+name='elasticsearch'
 last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
