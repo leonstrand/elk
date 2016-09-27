@@ -9,7 +9,7 @@ echo
 interface=$(ip -o link | awk '{print $2}' | egrep -v 'lo|loopback|docker' | tr -d :)
 echo $0: interface: $interface
 
-docker run \
+command="docker run \
   -d \
   --net=host \
   --name $name \
@@ -19,6 +19,9 @@ docker run \
     agent \
     -server \
     -bootstrap
+"
+echo $command
+eval $command
 
 echo
 docker ps -f name=$name
