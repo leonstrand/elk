@@ -74,7 +74,7 @@ until curl $ip:$next_http_port 1>/dev/null 2>&1; do
   #echo -n .
   echo
   echo
-  docker ps -f name=$name
+  docker ps -f label=$name
   echo
   netstat -lnt | egrep 'Active|Proto|$next_http_port'
   #sleep 0.2
@@ -170,6 +170,6 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
 fi
 
 echo
-docker ps -f name=$name
+docker ps -f label=$name
 echo
 echo
