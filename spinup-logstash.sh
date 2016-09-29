@@ -17,7 +17,7 @@ echo
 # get list of server log directories
 echo
 echo $0: getting list of log directories, one per server
-servers=$(find $directory_logs -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+servers=$(find $directory_logs -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | sort)
 echo $0: servers: $servers
 
 # get list of passing logstash service ids
