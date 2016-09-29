@@ -24,7 +24,10 @@ command="docker run
     -server
 "
 case "$1" in
-  b|boot|bootstrap) command=$command' -bootstrap';;
+  b|boot|bootstrap)
+    echo $0: bootstrap mode selected by input \'$1\'
+    command=$command' -bootstrap'
+  ;;
   '')
     echo
     echo
