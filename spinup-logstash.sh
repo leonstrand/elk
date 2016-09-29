@@ -95,7 +95,7 @@ for server in $servers; do
     # register logstash
     echo
     echo $0: registering logstash
-    echo curl -v -X PUT http://192.168.1.167:8500/v1/agent/service/register \
+    echo curl -v -X PUT http://$ip:8500/v1/agent/service/register \
       -d "$(printf '{
         "Name": "%s",
         "ID": "%s",
@@ -110,7 +110,7 @@ for server in $servers; do
       $server \
       $ip)
     "
-    curl -v -X PUT http://192.168.1.167:8500/v1/agent/service/register \
+    curl -v -X PUT http://$ip:8500/v1/agent/service/register \
       -d "$(printf '{
         "Name": "%s",
         "ID": "%s",
