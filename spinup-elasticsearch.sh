@@ -4,6 +4,7 @@
 
 
 name='elasticsearch'
+heap_size='1g'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
@@ -49,6 +50,7 @@ docker run -d \
   --label $name \
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
+  -e ES_HEAP_SIZE=$heap_size
   elasticsearch \
   -Dnetwork.host=0.0.0.0 \
   -Des.node.name=$(hostname)-$next_container \
