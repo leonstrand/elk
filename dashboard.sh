@@ -85,7 +85,7 @@ for elasticsearch_node in $elasticsearch_nodes; do
 done
 
 echo
-echo $0: log directories handling
+echo $0: log directory handling
 log_directories=$(find $log_directory -mindepth 1 -maxdepth 1 -type d | sort)
 echo -e directory\\t\\tserver\\t\\tstatus
 for log_directory in $log_directories; do
