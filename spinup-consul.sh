@@ -4,11 +4,12 @@
 
 
 name='consul-1'
+consul_seed='192.168.1.62'
 
 echo
 echo
 echo $0: determining self ip address
-interface=$(ip -o link | awk '{print $2}' | egrep -v 'lo|loopback|docker' | tr -d :)
+interface=$(ip -o link | egrep -v 'lo|loopback|docker' | awk '{print $2}' | tr -d :)
 echo $0: interface: $interface
 
 echo
@@ -22,8 +23,11 @@ command="docker run
   consul
     agent
     -server
-    -bootstrap
 "
+case "$1" in
+  b|boot|bootstrap) command=$command' -bootstrap';;
+  *) command=$command' -join '$consul_seed;;
+esac
 echo $command
 eval $command
 
