@@ -4,7 +4,6 @@
 
 
 name='consul-1'
-consul_seed='192.168.1.62'
 
 echo
 echo
@@ -26,7 +25,23 @@ command="docker run
 "
 case "$1" in
   b|boot|bootstrap) command=$command' -bootstrap';;
-  *) command=$command' -join '$consul_seed;;
+  '')
+    echo
+    echo
+    echo $0: fatal: must provide input string \'bootstrap\' or consul server hostname or ip address
+    echo
+    echo $0: bootstrap examples:
+    echo $0: usage $0 b
+    echo $0: usage $0 boot
+    echo $0: usage $0 bootstrap
+    echo
+    echo $0 hostname or ip address examples
+    echo $0: usage $0 foo.bar.local
+    echo $0: usage $0 1.1.1.1
+    echo
+    exit 1
+  ;;
+  *) command=$command' -join '$1;;
 esac
 echo $command
 eval $command
