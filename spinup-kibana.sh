@@ -214,6 +214,7 @@ eval $command
 cd $directory
 
 echo
-docker ps -f name=$name
 echo
+echo $0: info: docker ps -f name=$name
+docker ps -f name=$name
 echo
