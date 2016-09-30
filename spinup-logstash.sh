@@ -31,56 +31,63 @@ done
 # handle first unhandled server
 echo
 echo
-echo $0: seeking first unhandled server
+echo $0: info: seeking first unhandled server
 handled=0
 for server in $servers; do
-  echo -n $0: server: $server\ 
+  echo -n $0: info: $server\ 
   # check consul to see if server not handled
   if [[ $service_ids != *$server* ]]; then
     echo not already handled
     # determine container name
     echo
-    echo $0: determining container name
+    echo
     last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
     if [ -z "$last_container" ]; then
       next_container=${name}-1
     else
       next_container=${name}-$(expr $(echo $last_container | awk 'BEGIN { FS = "-" } ; { print $NF }') + 1)
     fi
-    echo next_container: $next_container
+    echo $0: info: container name: $next_container
 
     # discover elasticsearch nodes passing consul check
     echo
-    echo $0: discovering elasticsearch nodes passing consul check
+    echo
+    echo $0: info: elasticsearch nodes passing consul check
     echo curl -sS $ip:8500/v1/catalog/service/elasticsearch-http?passing
-    #elasticsearch_hosts=$(curl -sS $ip:8500/v1/catalog/service/elasticsearch-http | jq -jr '.[] | "\"" + .ServiceAddress + ":" + "\(.ServicePort)" + "\","' | sed 's/,$//')
     elasticsearch_hosts=$(curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | "\"" + .Address + ":" + "\(.Port)" + "\","' | sed 's/,$//')
     if [ -z "$elasticsearch_hosts" ]; then
       echo $0: fatal: could not find any elasticsearch host
       exit 1
     fi
+    echo $elasticsearch_hosts | tr -d \" | tr , \\n
     elasticsearch_hosts='['$elasticsearch_hosts']'
-    echo elasticsearch_hosts: $elasticsearch_hosts
 
     # configure logstash
     echo
-    echo $0: configuring logstash
+    echo
+    echo $0: info: configuring logstash
     [ -d $directory/logstash/containers/$next_container ] && rm -rv $directory/logstash/containers/$next_container
     mkdir -vp $directory/logstash/containers/$next_container
     cp -vr $directory/logstash/config $directory/logstash/containers/$next_container
-    echo $0: configuring logstash input
+    echo
+    echo $0: info: configuring logstash input
+    echo $0: info: logstash configuration file: $directory/logstash/containers/$next_container/config/100-input-logstash.conf
     sed 's/REPLACE_SERVER/'$server'/' logstash/template/100-input-logstash.conf  | tee $directory/logstash/containers/$next_container/config/100-input-logstash.conf
-    echo $0: configuring logstash output
+    echo
+    echo $0: info: configuring logstash output
+    echo $0: info: logstash configuration file: $directory/logstash/containers/$next_container/config/300-output-logstash.conf
     sed 's/REPLACE/'$elasticsearch_hosts'/' logstash/template/300-output-logstash.conf | tee $directory/logstash/containers/$next_container/config/300-output-logstash.conf
-    echo $0: configuring logstash heartbeat
+    echo
+    echo $0: info: configuring logstash heartbeat
+    echo $0: info: logstash configuration file: $directory/logstash/containers/$next_container/config/400-heartbeat-logstash.conf
     sed 's/REPLACE_CONSUL_HOST/'$ip'/' logstash/template/400-heartbeat-logstash.conf > $directory/logstash/containers/$next_container/config/400-heartbeat-logstash.conf
     sed -i 's/REPLACE_LOGSTASH_SERVER/'$server'/' $directory/logstash/containers/$next_container/config/400-heartbeat-logstash.conf
     cat $directory/logstash/containers/$next_container/config/400-heartbeat-logstash.conf
 
-      #-v $directory/logstash/containers/$next_container/config:/etc/logstash/conf.d \
     # spin up logstash container
     echo
-    echo $0: spinning up logstash container
+    echo
+    echo $0: info: starting container $next_container
     command="
     docker run -d \
       --name $next_container \
@@ -91,14 +98,17 @@ for server in $servers; do
       -f /config/ \
       --auto-reload
     "
+    echo $0: info: command:
     echo $command
-    eval $command
+    result=$(eval $command)
+    echo $0: info: result: $result
 
-    # register logstash
+    # consul registeration
     echo
-    echo $0: registering logstash
+    echo
+    echo $0: registering logstash with consul
     echo curl -v -X PUT http://$ip:8500/v1/agent/service/register \
-      -d "$(printf '{
+      -d "$(printf \''{
         "Name": "%s",
         "ID": "%s",
         "Address": "%s",
@@ -107,11 +117,10 @@ for server in $servers; do
             "TTL": "30s"
           }
         ]
-      }' \
+      }'\' \
       $service_name \
       $server \
-      $ip)
-    "
+      $ip)"
     curl -v -X PUT http://$ip:8500/v1/agent/service/register \
       -d "$(printf '{
         "Name": "%s",
@@ -125,8 +134,7 @@ for server in $servers; do
       }' \
       $name \
       $server \
-      $ip)
-    "
+      $ip)"
     handled=1
     break
   else
@@ -137,6 +145,7 @@ if [ $handled -eq 0 ]; then
   echo $0: info: nothing to handle
 fi
 
+echo
 echo
 docker ps -f name=$name
 echo
