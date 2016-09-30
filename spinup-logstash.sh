@@ -8,7 +8,7 @@ directory=$(pwd)
 directory_logs=/pai-logs
 
 # determine ip address
-ip=$(ip -o address | awk '$2 !~ /lo|docker/ && $3 ~ /inet$/ {print $4}' | cut -d/ -f1)
+ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
 service_name='logstash'
 
 
