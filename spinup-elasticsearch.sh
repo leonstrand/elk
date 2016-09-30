@@ -5,6 +5,8 @@
 
 echo
 echo
+
+# determine container name
 name='elasticsearch'
 heap_size='1g'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
@@ -15,7 +17,6 @@ else
 fi
 echo $0: info: container name: $next_container
 echo $0: info: heap size: $heap_size
-
 
 # determine ip address
 ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
@@ -77,7 +78,6 @@ echo $command
 result=$(eval $command)
 echo $0: info: result: $result
 
-
 # consul registration
 echo
 echo
@@ -96,10 +96,6 @@ done
 if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   CONSUL_IP=$ip
   CONSUL_PORT=8500
-
-  #curl -f --retry 7 --retry-delay 3 \
-  #http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
-  #-d "$(printf '{"ID":"%s","Name":"elasticsearch","Address":"%s","Port":%s, "Check":{"HTTP": "http://%s:%s", "Interval": "10s"}}' $next_container $PRIVATE_IP $PRIVATE_PORT $PRIVATE_IP $PRIVATE_PORT)"
 
   # register es transport
   echo $0: info: registering elasticsearch transport service with consul
