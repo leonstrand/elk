@@ -187,13 +187,9 @@ done
 echo -n $0: info: check passed:\ 
 curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + "\n"' | grep $next_http_port
 
-echo
-# identify elasticsearch host
-#elasticsearch_host=$(curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -r '.[0] | .Service | .Address + ":" + "\(.Port)"')
+# set elasticsearch host
 elasticsearch_host=$ip
-#elasticsearch_port=$(docker inspect kb-1-elasticsearch-loadbalancer | grep http.publish_port | head -1 | cut -d= -f2 | tr -d '",')
 elasticsearch_port=$next_http_port
-echo elasticsearch host: $elasticsearch_host:$elasticsearch_port
 
 # configure kibana build
 [ -d $directory/kibana/containers ] || mkdir -vp $directory/kibana/containers
