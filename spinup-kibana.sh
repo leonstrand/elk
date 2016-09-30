@@ -206,7 +206,7 @@ find $directory/kibana/containers/$next_container -type f -exec sed -i 's/REPLAC
 find $directory/kibana/containers/$next_container -type f -exec sed -i 's/REPLACE_ELASTICSEARCH_PORT/'$elasticsearch_port'/g' {} \;
 # send this to build
 #sed 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/docker-compose-kibana-template.yml >$directory/docker-compose.yml
-echo sed -i 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/kibana/containers/$next_container/docker-compose.yml
+echo sed -i \''s/REPLACE_KIBANA_CONTAINER/'$next_container'/'\' $directory/kibana/containers/$next_container/docker-compose.yml
 sed -i 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/kibana/containers/$next_container/docker-compose.yml
 
 # start kibana
