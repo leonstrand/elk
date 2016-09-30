@@ -30,6 +30,7 @@ done
 
 # handle first unhandled server
 echo
+echo
 echo $0: seeking first unhandled server
 handled=0
 for server in $servers; do
