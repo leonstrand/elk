@@ -52,7 +52,7 @@ fi
 #-Des.logger.level=DEBUG
 echo
 echo
-echo $0: info starting container $next_container
+echo $0: info: starting container $next_container
 command="
 docker run -d \
   --name $next_container \
