@@ -172,6 +172,8 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
 fi
 
 echo
-docker ps -f label=$name
 echo
+echo $0: info: running containers labeled $name
+echo docker ps -f label=$name
+docker ps -f label=$name
 echo
