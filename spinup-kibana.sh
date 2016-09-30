@@ -207,7 +207,7 @@ echo sed -i 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/kibana/co
 sed -i 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/kibana/containers/$next_container/docker-compose.yml
 
 # start kibana
-command="cd $directory/kibana/containers/$next_container && time docker-compose up --build -d"
+command="cd $directory/kibana/containers/$next_container && docker-compose up --build -d"
 echo $command
 eval $command
 
