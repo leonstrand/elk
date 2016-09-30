@@ -191,15 +191,15 @@ curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .
 elasticsearch_host=$ip
 elasticsearch_port=$next_http_port
 
-# configure kibana build
+# configure kibana
+echo
+echo
+echo $0: info: configuring kibana
 [ -d $directory/kibana/containers ] || mkdir -vp $directory/kibana/containers
 [ -d $directory/kibana/containers/$next_container ] && rm -rv $directory/kibana/containers/$next_container
 cp -vr $directory/kibana/template $directory/kibana/containers/$next_container
-#cp -v $directory/kibana/template/kibana.yml $directory/kibana/containers/$next_container/config
 find $directory/kibana/containers/$next_container -type f -exec sed -i 's/REPLACE_ELASTICSEARCH_HOST/'$elasticsearch_host'/g' {} \;
 find $directory/kibana/containers/$next_container -type f -exec sed -i 's/REPLACE_ELASTICSEARCH_PORT/'$elasticsearch_port'/g' {} \;
-# send this to build
-#sed 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/docker-compose-kibana-template.yml >$directory/docker-compose.yml
 echo sed -i \''s/REPLACE_KIBANA_CONTAINER/'$next_container'/'\' $directory/kibana/containers/$next_container/docker-compose.yml
 sed -i 's/REPLACE_KIBANA_CONTAINER/'$next_container'/' $directory/kibana/containers/$next_container/docker-compose.yml
 
