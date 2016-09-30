@@ -8,6 +8,8 @@ directory=$(pwd)
 name_elasticsearch='elasticsearch'
 
 
+echo
+echo
 # determine container name
 last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
 if [ -z "$last_container" ]; then
