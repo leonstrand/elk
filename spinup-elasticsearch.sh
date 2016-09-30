@@ -83,7 +83,6 @@ echo
 echo
 until curl $ip:$next_http_port 1>/dev/null 2>&1; do
   echo $0: info: waiting for $next_container container to respond with status 200 on http port $next_http_port
-  #echo -n .
   echo docker ps -f name=$next_container
   docker ps -f name=$next_container
   echo
