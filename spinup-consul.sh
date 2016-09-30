@@ -8,7 +8,8 @@ name='consul-1'
 echo
 echo
 echo $0: determining self ip address
-interface=$(ip -o link | egrep -v 'lo|loopback|docker' | awk '{print $2}' | tr -d :)
+interface=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $2}' | head -1)
+
 echo $0: interface: $interface
 
 echo
