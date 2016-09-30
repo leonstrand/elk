@@ -84,17 +84,16 @@ echo $0: info: result: $result
 echo
 echo
 until curl $ip:$next_http_port 1>/dev/null 2>&1; do
-  #echo -n .
+  echo $0: info: waiting for $next_container_elasticsearch_loadbalancer container on http port $next_http_port to respond with status 200 
+  echo docker ps -f name=$next_container_elasticsearch_loadbalancer
+  docker ps -f name=$next_container_elasticsearch_loadbalancer
+  echo
+  echo netstat -lnt \| egrep \''Active|Proto|'$next_http_port\'
+  netstat -lnt | egrep 'Active|Proto|'$next_http_port
   echo
   echo
-  docker ps -f name=$name
-  echo
-  netstat -lnt | egrep 'Active|Proto|$next_http_port'
-  #sleep 0.2
   sleep 1
 done
-
-echo
 if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   CONSUL_IP=$ip
   CONSUL_PORT=8500
