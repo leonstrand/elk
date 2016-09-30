@@ -56,7 +56,7 @@ fi
 #-Des.logger.level=DEBUG
 echo
 echo
-echo $0: info starting container $next_container_elasticsearch_loadbalancer
+echo $0: info: starting container $next_container_elasticsearch_loadbalancer
 command="
 docker run -d \
   --name $next_container_elasticsearch_loadbalancer \
