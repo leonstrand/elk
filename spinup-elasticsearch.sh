@@ -3,6 +3,8 @@
 # leonstrand@gmail.com
 
 
+echo
+echo
 name='elasticsearch'
 heap_size='1g'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
@@ -11,11 +13,13 @@ if [ -z "$last_container" ]; then
 else
   next_container=${name}-$(expr $(echo $last_container | awk 'BEGIN { FS = "-" } ; { print $NF }') + 1)
 fi
-echo next_container: $next_container
+echo $0: info: container name: $next_container
+echo $0: info: heap size: $heap_size
 
 
 # determine ip address
 ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
+echo $0: info: network publish host: $ip
 
 # select next free http port over $base_port
 base_port=10000
@@ -25,7 +29,7 @@ if [ -z "$last_http_port" ]; then
 else
   next_http_port=$(expr $last_http_port + 1)
 fi
-echo next_http_port: $next_http_port
+echo $0: info: http port: $next_http_port
 
 # select next free transport port over $base_port
 last_transport_port=$(for i in $(docker ps -qf name=$name); do docker port $i | awk '/^9300/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
@@ -34,16 +38,20 @@ if [ -z "$last_transport_port" ]; then
 else
   next_transport_port=$(expr $last_transport_port + 1)
 fi
-echo next_transport_port: $next_transport_port
+echo $0: info: transport port: $next_transport_port
 
 # consul discovery of any existing elasticsearch nodes
 unicast_hosts=$(curl -sS $ip:8500/v1/health/service/elasticsearch-transport?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + ","' | sed 's/,$//')
-echo unicast_hosts: $unicast_hosts
+echo $0: info: live elasticsearch nodes:
+echo $unicast_hosts | tr , \\n
 if [ -z "$unicast_hosts" ]; then
   unicast_hosts=$ip':'$next_transport_port
 fi
 
 #-Des.logger.level=DEBUG
+echo
+echo
+echo $0: info starting container $next_container
 command="
 docker run -d \
   --name $next_container \
@@ -64,9 +72,10 @@ docker run -d \
 "
   #-Des.node.master=false \
   #-Des.node.data=false \
-echo command: $command
+echo $0: info: command:
+echo $command
 result=$(eval $command)
-echo result: $result
+echo $0: info: result: $result
 
 
 # consul registration
