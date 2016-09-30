@@ -73,16 +73,17 @@ echo result: $result
 echo
 echo
 until curl $ip:$next_http_port 1>/dev/null 2>&1; do
+  echo $0: info: waiting for $next_container container to respond with status 200 on http port $next_http_port
   #echo -n .
+  echo docker ps -f name=$next_container
+  docker ps -f name=$next_container
+  echo
+  echo netstat -lnt \| egrep \''Active|Proto|'$next_http_port\'
+  netstat -lnt | egrep 'Active|Proto|'$next_http_port
   echo
   echo
-  docker ps -f label=$name
-  echo
-  netstat -lnt | egrep 'Active|Proto|$next_http_port'
-  #sleep 0.2
   sleep 1
 done
-echo
 if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   CONSUL_IP=$ip
   CONSUL_PORT=8500
@@ -92,7 +93,6 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   #-d "$(printf '{"ID":"%s","Name":"elasticsearch","Address":"%s","Port":%s, "Check":{"HTTP": "http://%s:%s", "Interval": "10s"}}' $next_container $PRIVATE_IP $PRIVATE_PORT $PRIVATE_IP $PRIVATE_PORT)"
 
   # register es transport
-  echo
   echo $0: info: registering elasticsearch transport service with consul
   echo curl -v --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
