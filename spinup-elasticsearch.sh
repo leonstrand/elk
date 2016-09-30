@@ -92,9 +92,11 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   #-d "$(printf '{"ID":"%s","Name":"elasticsearch","Address":"%s","Port":%s, "Check":{"HTTP": "http://%s:%s", "Interval": "10s"}}' $next_container $PRIVATE_IP $PRIVATE_PORT $PRIVATE_IP $PRIVATE_PORT)"
 
   # register es transport
-  echo curl -f --retry 7 --retry-delay 3 \
+  echo
+  echo $0: info: registering elasticsearch transport service with consul
+  echo curl -v --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
-  -d "$(printf '{
+  -d "$(printf \''{
     "ID":"%s",
     "Name":"elasticsearch-transport",
     "Address":"%s",
@@ -103,15 +105,14 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
       "HTTP": "http://%s:%s",
       "Interval": "10s"
     }
-  }' \
+  }'\' \
   elasticsearch-transport-$ip:$next_transport_port \
   $ip \
   $next_transport_port \
   $ip \
-  $next_http_port)
-  "
+  $next_http_port)"
 
-  curl -f --retry 7 --retry-delay 3 \
+  curl -v --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   -d "$(printf '{
     "ID":"%s",
@@ -127,13 +128,14 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   $ip \
   $next_transport_port \
   $ip \
-  $next_http_port)
-  "
+  $next_http_port)"
 
   # register es http
-  echo curl -f --retry 7 --retry-delay 3 \
+  echo
+  echo $0: info: registering elasticsearch http service with consul
+  echo curl -v --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
-  -d "$(printf '{
+  -d "$(printf \''{
     "ID":"%s",
     "Name":"elasticsearch-http",
     "Address":"%s",
@@ -142,15 +144,14 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
       "HTTP": "http://%s:%s",
       "Interval": "10s"
     }
-  }' \
+  }'\' \
   elasticsearch-http-$ip:$next_http_port \
   $ip \
   $next_http_port \
   $ip \
-  $next_http_port)
-  "
+  $next_http_port)"
 
-  curl -f --retry 7 --retry-delay 3 \
+  curl -v --retry 7 --retry-delay 3 \
   http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
   -d "$(printf '{
     "ID":"%s",
@@ -166,8 +167,7 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   $ip \
   $next_http_port \
   $ip \
-  $next_http_port)
-  "
+  $next_http_port)"
 
 fi
 
