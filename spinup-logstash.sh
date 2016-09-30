@@ -11,14 +11,12 @@ directory_logs=/pai-logs
 ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
 service_name='logstash'
 
-
-echo
-
 # get list of server log directories
 echo
-echo $0: getting list of log directories, one per server
+echo
+echo $0: info: log directories in $directory_logs:
+find $directory_logs -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | sort
 servers=$(find $directory_logs -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | sort)
-echo $0: servers: $servers
 
 # get list of passing logstash service ids
 echo
