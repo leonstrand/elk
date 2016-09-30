@@ -182,8 +182,10 @@ echo $0: info: waiting for elasticsearch load balancer container to pass consul 
 echo $0: info: checking with:
 echo curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing \| jq -jr \''.[] | .Service | .Address + ":" + "\(.Port)" + "\n"'\' \| grep -q $next_http_port
 until curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + "\n"' | grep -q $next_http_port; do
+  echo -n .
   sleep 0.1
 done
+echo
 echo -n $0: info: check passed:\ 
 curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + "\n"' | grep $next_http_port
 
