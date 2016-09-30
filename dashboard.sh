@@ -81,8 +81,7 @@ for elasticsearch_node in $elasticsearch_nodes; do
     fi
   fi
   echo -e $node_ip'\t'$node_port'\t'$role
-#done | sort -V
-done
+done | sort -V
 
 echo
 echo $0: log directory handling
