@@ -15,7 +15,7 @@ echo next_container: $next_container
 
 
 # determine ip address
-ip=$(ip -o address | awk '$2 !~ /lo|docker/ && $3 ~ /inet$/ {print $4}' | cut -d/ -f1)
+ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
 
 # select next free http port over $base_port
 base_port=10000
