@@ -214,6 +214,7 @@ echo
 echo
 echo $0: info: starting container $next_container
 command="cd $directory/kibana/containers/$next_container && docker-compose up --build -d"
+echo $0: info: command:
 echo $command
 eval $command
 
