@@ -20,10 +20,13 @@ servers=$(find $directory_logs -maxdepth 1 -mindepth 1 -type d -exec basename {}
 
 # get list of passing logstash service ids
 echo
-echo $0: getting list of passing logstash service ids
+echo
+echo $0: info: live logstash service ids:
 echo curl -sS http://$ip:8500/v1/health/service/$service_name?passing \| jq -r \''.[] .Service | .ID'\'
 service_ids=$(curl -sS http://$ip:8500/v1/health/service/$service_name?passing | jq -r '.[] .Service | .ID')
-echo service_ids: $service_ids
+for service_id in $service_ids; do
+  echo $service_id
+done
 
 # handle first unhandled server
 echo
