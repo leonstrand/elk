@@ -177,12 +177,9 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   $next_http_port)"
 fi
 
-echo
-echo $0: elasticsearch http nodes:
 until curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + "\n"' | grep -q $next_http_port; do
   sleep 0.1
 done
-curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + "\n"'
 
 echo
 # identify elasticsearch host
