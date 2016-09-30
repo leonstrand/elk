@@ -20,7 +20,7 @@ echo next_container: $next_container
 echo next_container_elasticsearch_loadbalancer: $next_container_elasticsearch_loadbalancer
 
 # identify ip address
-ip=$(ip -o address | awk '$2 !~ /lo|docker/ && $3 ~ /inet$/ {print $4}' | cut -d/ -f1)
+ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
 echo ip: $ip
 
 # select next free http port over $base_port
