@@ -54,6 +54,9 @@ if [ -z "$unicast_hosts" ]; then
 fi
 
 #-Des.logger.level=DEBUG
+echo
+echo
+echo $0: info starting container $next_container
 command="
 docker run -d \
   --name $next_container_elasticsearch_loadbalancer \
@@ -72,10 +75,10 @@ docker run -d \
   -Des.discovery.zen.ping.unicast.hosts=$unicast_hosts \
   -Dindex.codec=best_compression
 "
-echo command: $command
+echo $0: info: command:
+echo $command
 result=$(eval $command)
-echo result: $result
-
+echo $0: info: result: $result
 
 # consul registration
 echo
