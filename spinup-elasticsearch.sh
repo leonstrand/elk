@@ -6,6 +6,8 @@
 echo
 echo
 
+elasticsearch_indices_path=/elk
+
 # determine container name
 name='elasticsearch'
 heap_size='1g'
@@ -49,6 +51,10 @@ if [ -z "$unicast_hosts" ]; then
   unicast_hosts=$ip':'$next_transport_port
 fi
 
+# prepare indices directory
+[ -d $elasticsearch_indices_path/elasticsearch/$next_container ] && rm -rv $elasticsearch_indices_path/elasticsearch/$next_container
+mkdir -vp $elasticsearch_indices_path/elasticsearch/$next_container/data
+
 #-Des.logger.level=DEBUG
 echo
 echo
@@ -60,6 +66,7 @@ docker run -d \
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
   -e ES_HEAP_SIZE=$heap_size
+  -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
   elasticsearch \
   -Dnetwork.host=0.0.0.0 \
   -Des.node.name=$(hostname)-$next_container \
