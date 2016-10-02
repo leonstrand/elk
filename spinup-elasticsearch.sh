@@ -52,7 +52,10 @@ if [ -z "$unicast_hosts" ]; then
 fi
 
 # prepare indices directory
-[ -d $elasticsearch_indices_path/elasticsearch/$next_container ] && rm -rv $elasticsearch_indices_path/elasticsearch/$next_container
+echo
+echo
+echo $0: info: preparing indices directory in $elasticsearch_indices_path
+[ -d $elasticsearch_indices_path/elasticsearch/$next_container ] && rm -frv $elasticsearch_indices_path/elasticsearch/$next_container
 mkdir -vp $elasticsearch_indices_path/elasticsearch/$next_container/data
 
 #-Des.logger.level=DEBUG
@@ -61,6 +64,7 @@ echo
 echo $0: info: starting container $next_container
 command="
 docker run -d \
+  --user $(id -u):$(id -g) \
   --name $next_container \
   --label $name \
   -p $next_http_port:9200 \
