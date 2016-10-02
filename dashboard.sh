@@ -35,8 +35,10 @@ execute() {
   eval $@
 }
 
-command='curl -sS '$address':'$port'/_cat/indices?v | sort -k3'
-execute $command
+echo curl -sS $address:$port/_cat/indices?v
+curl -sS 10.153.13.35:19201/_cat/indices?v | grep health
+curl -sS 10.153.13.35:19201/_cat/indices?v | awk '$2 ~ /open/' | sort -V
+curl -sS 10.153.13.35:19201/_cat/indices?v | awk '$1 ~ /close/' | sort -V
 
 docs_count=$(curl -sS $address:$port/_cat/indices?v | egrep -v 'health|kibana' | awk '{sum += $6} END {print sum}')
 docs_deleted=$(curl -sS $address:$port/_cat/indices?v | egrep -v 'health|kibana' | awk '{sum += $7} END {print sum}')
