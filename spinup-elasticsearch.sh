@@ -45,9 +45,11 @@ echo $0: info: transport port: $next_transport_port
 
 # consul discovery of any existing elasticsearch nodes
 unicast_hosts=$(curl -sS $ip:8500/v1/health/service/elasticsearch-transport?passing | jq -jr '.[] | .Service | .Address + ":" + "\(.Port)" + ","' | sed 's/,$//')
-echo $0: info: live elasticsearch nodes:
-echo $unicast_hosts | tr , \\n
-if [ -z "$unicast_hosts" ]; then
+if [ -n "$unicast_hosts" ]; then
+  echo $0: info: live elasticsearch nodes:
+  echo $unicast_hosts | tr , \\n
+else
+  echo $0: info: no live elasticsearch nodes, setting unicast hosts to self
   unicast_hosts=$ip':'$next_transport_port
 fi
 
