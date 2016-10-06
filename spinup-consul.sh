@@ -7,7 +7,7 @@ name='consul-1'
 
 echo
 echo
-echo $0: determining self ip address
+echo $0: determining self interface
 interface=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $2}' | head -1)
 
 echo $0: interface: $interface
