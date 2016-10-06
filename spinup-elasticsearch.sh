@@ -10,7 +10,7 @@ elasticsearch_indices_path=/elk
 
 # determine container name
 name='elasticsearch'
-heap_size='1g'
+heap_size='31g'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
@@ -57,7 +57,7 @@ fi
 echo
 echo
 echo $0: info: preparing indices directory in $elasticsearch_indices_path
-[ -d $elasticsearch_indices_path/elasticsearch/$next_container ] && rm -frv $elasticsearch_indices_path/elasticsearch/$next_container
+[ -d $elasticsearch_indices_path/elasticsearch/$next_container ] && echo rm -fr $elasticsearch_indices_path/elasticsearch/$next_container && rm -fr $elasticsearch_indices_path/elasticsearch/$next_container
 mkdir -vp $elasticsearch_indices_path/elasticsearch/$next_container/data
 
 #-Des.logger.level=DEBUG
@@ -90,21 +90,23 @@ echo $0: info: command:
 echo $command
 result=$(eval $command)
 echo $0: info: result: $result
+echo
+echo docker ps -f name=$next_container
+docker ps -f name=$next_container
+echo
+echo netstat -lnt \| egrep \''Active|Proto|'$next_http_port\'
+netstat -lnt | egrep 'Active|Proto|'$next_http_port
+echo
+echo $0: info: waiting for $next_container container to respond on http port $next_http_port with status 200
+echo curl $ip:$next_http_port
+until curl $ip:$next_http_port 1>/dev/null 2>&1; do
+  sleep 1
+done
+curl $ip:$next_http_port
 
 # consul registration
 echo
 echo
-until curl $ip:$next_http_port 1>/dev/null 2>&1; do
-  echo $0: info: waiting for $next_container container to respond on http port $next_http_port with status 200 
-  echo docker ps -f name=$next_container
-  docker ps -f name=$next_container
-  echo
-  echo netstat -lnt \| egrep \''Active|Proto|'$next_http_port\'
-  netstat -lnt | egrep 'Active|Proto|'$next_http_port
-  echo
-  echo
-  sleep 1
-done
 if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   CONSUL_IP=$ip
   CONSUL_PORT=8500
