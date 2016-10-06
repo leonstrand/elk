@@ -1,7 +1,8 @@
 {
   "template" : "logstash-*",
   "settings" : {
-    "index.refresh_interval" : "5s"
+    "index.refresh_interval" : "5s",
+    "index.codec" : "best_compression"
   },
   "mappings" : {
     "_default_" : {
