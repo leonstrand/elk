@@ -84,17 +84,19 @@ echo $0: info: result: $result
 # consul registration
 echo
 echo
+echo $0: info: waiting for $next_container_elasticsearch_loadbalancer container on http port $next_http_port to respond with status 200
+echo docker ps -f name=$next_container_elasticsearch_loadbalancer
+docker ps -f name=$next_container_elasticsearch_loadbalancer
+echo
+echo netstat -lnt \| egrep \''Active|Proto|'$next_http_port\'
+netstat -lnt | egrep 'Active|Proto|'$next_http_port
+echo
+echo
+echo curl $ip:$next_http_port
 until curl $ip:$next_http_port 1>/dev/null 2>&1; do
-  echo $0: info: waiting for $next_container_elasticsearch_loadbalancer container on http port $next_http_port to respond with status 200 
-  echo docker ps -f name=$next_container_elasticsearch_loadbalancer
-  docker ps -f name=$next_container_elasticsearch_loadbalancer
-  echo
-  echo netstat -lnt \| egrep \''Active|Proto|'$next_http_port\'
-  netstat -lnt | egrep 'Active|Proto|'$next_http_port
-  echo
-  echo
   sleep 1
 done
+curl $ip:$next_http_port
 if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   CONSUL_IP=$ip
   CONSUL_PORT=8500
