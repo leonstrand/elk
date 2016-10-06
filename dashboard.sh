@@ -35,26 +35,26 @@ execute() {
   eval $@
 }
 
+tmp=/tmp/dashboard.sh.indices
 echo curl -sS $address:$port/_cat/indices?v
-curl -sS 10.153.13.35:19201/_cat/indices?v | grep health
-curl -sS 10.153.13.35:19201/_cat/indices?v | awk '$2 ~ /open/' | sort -V
-curl -sS 10.153.13.35:19201/_cat/indices?v | awk '$1 ~ /close/' | sort -V
+curl -sS $ip:19201/_cat/indices?v | grep health >$tmp
+curl -sS $ip:19201/_cat/indices?v | awk '$2 ~ /open/' | sort -V >>$tmp
+curl -sS $ip:19201/_cat/indices?v | awk '$1 ~ /close/' | sort -V >>$tmp
 
-docs_count=$(curl -sS $address:$port/_cat/indices?v | egrep -v 'health|kibana' | awk '{sum += $6} END {print sum}')
-docs_deleted=$(curl -sS $address:$port/_cat/indices?v | egrep -v 'health|kibana' | awk '{sum += $7} END {print sum}')
-printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted
+docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
+docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
+printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted >>$tmp
 
+sed -i 's/\(^health.*$\)/\1\tfile/' $tmp
 
-echo
-echo $0: storage usage
-echo -e index\\t\\t\\tes\\tfile
 while read index size; do
   index_elasticsearch=$index
   index=$(echo $index | cut -d- -f2)
   index=$(echo $index | sed 's/\.//g')
   size_file=$(du -csh $(find /pai-logs -type f -name \*$index\*) | grep total | awk '{print $1}')
-  echo -e $index_elasticsearch\\t$size\\t$size_file
+  sed -i 's/\(^.*'$index_elasticsearch'.*$\)/\1\t'$size_file'/' $tmp
 done < <(curl -sS $address:$port/_cat/indices?v | grep logstash | awk '{print $3, $NF}' | sort)
+cat $tmp
 
 
 echo
