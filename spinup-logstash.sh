@@ -41,7 +41,7 @@ for server in $servers; do
     # determine container name
     echo
     echo
-    last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort | tail -1)
+    last_container=$(docker ps -af name=${name}- | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
     if [ -z "$last_container" ]; then
       next_container=${name}-1
     else
