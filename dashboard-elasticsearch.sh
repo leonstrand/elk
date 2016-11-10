@@ -6,6 +6,7 @@
 log_directory=/pai-logs
 
 
+# check for self ip address, elasticsearch ip address and port, and successful connection to elasticsearch before proceeding
 ip=$(ip -o address | awk '$2 !~ /lo|docker/ && $3 ~ /inet$/ && $4 !~ /^169/ {print $4}' | cut -d/ -f1)
 if [ -z "$ip" ]; then
   echo $0: fatal: could not determine self ip address with:
@@ -30,11 +31,7 @@ if ! nc -w1 $address $port </dev/null; then
 fi
 
 
-execute() {
-  echo $@
-  eval $@
-}
-
+# indices output: index headers and kibana index
 tmp=/tmp/dashboard.sh.indices
 echo curl -sS $address:$port/_cat/indices?v
 curl -sS $ip:19201/_cat/indices?v >$tmp
@@ -43,7 +40,6 @@ awk '$2 ~ /open/' $tmp | sort -V >>$tmp-reorder
 awk '$1 ~ /close/' $tmp | sort -V >>$tmp-reorder
 mv $tmp-reorder $tmp
 sed 's/\(^health.*$\)/\1\tfile.size/' $tmp | egrep 'health|kibana'
-
 
 # exclude unresponsively mounted servers from file size check
 exclude=''
@@ -57,6 +53,7 @@ for server in $servers; do
 done
 exclude="$(echo $exclude | sed 's/^\s*//')"
 
+# indices output: logstash
 while read index size; do
   index_elasticsearch=$index
   index=$(echo $index | cut -d- -f2)
@@ -66,15 +63,20 @@ while read index size; do
 done < <(curl -sS $address:$port/_cat/indices?v | grep logstash | awk '{print $3, $NF}' | sort)
 egrep -v 'health|kibana' $tmp
 
+# indices output: document totals
 docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
 docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
 printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted
 
 
+# output cluster summary, state, etc
 echo
 command='curl -sS '$address':'$port'/_cluster/state/version,master_node?pretty'
-execute $command
+echo $command
+eval $command
 
+
+# output elasticsearch nodes and roles
 echo
 echo $0: elasticsearch cluster nodes
 echo -e 'ip address\tport\trole'
