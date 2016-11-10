@@ -58,6 +58,7 @@ for server in $servers; do
     exclude="$exclude $exclude_prefix $log_directory/$server $exclude_suffix"
   fi
 done
+exclude="$(echo $exclude | sed 's/^\s*//')"
 
 while read index size; do
   index_elasticsearch=$index
