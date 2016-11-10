@@ -45,7 +45,7 @@ docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
 docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
 printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted >>$tmp
 
-sed -i 's/\(^health.*$\)/\1\tfile/' $tmp
+sed -i 's/\(^health.*$\)/\1\tfile.size/' $tmp
 
 
 # exclude unresponsively mounted servers from file size check
