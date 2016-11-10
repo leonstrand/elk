@@ -37,9 +37,11 @@ execute() {
 
 tmp=/tmp/dashboard.sh.indices
 echo curl -sS $address:$port/_cat/indices?v
-curl -sS $ip:19201/_cat/indices?v | grep health >$tmp
-curl -sS $ip:19201/_cat/indices?v | awk '$2 ~ /open/' | sort -V >>$tmp
-curl -sS $ip:19201/_cat/indices?v | awk '$1 ~ /close/' | sort -V >>$tmp
+curl -sS $ip:19201/_cat/indices?v >$tmp
+grep health $tmp >$tmp-reorder
+awk '$2 ~ /open/' $tmp | sort -V >>$tmp-reorder
+awk '$1 ~ /close/' $tmp | sort -V >>$tmp-reorder
+mv $tmp-reorder $tmp
 
 docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
 docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
