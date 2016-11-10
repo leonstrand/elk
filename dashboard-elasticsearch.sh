@@ -6,18 +6,6 @@
 log_directory=/pai-logs
 
 
-
-# create list of unresponsively mounted servers
-servers=$(find $log_directory -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-list_services() {
-  __server=$1
-  __server_ip=$(grep $server /etc/fstab | head -1 | awk '{print $1}' | cut -d/ -f3)
-  smbclient -A ~/cifs.credentials -L $__server_ip 2>/dev/null >/tmp/$(basename $0).service-list.$__server
-}
-for server in $servers; do
-  list_services $server 2>&1 >/dev/null &
-done
-
 ip=$(ip -o address | awk '$2 !~ /lo|docker/ && $3 ~ /inet$/ && $4 !~ /^169/ {print $4}' | cut -d/ -f1)
 if [ -z "$ip" ]; then
   echo $0: fatal: could not determine self ip address with:
@@ -61,16 +49,15 @@ sed -i 's/\(^health.*$\)/\1\tfile/' $tmp
 
 
 # exclude unresponsively mounted servers from file size check
-#sleep 1
 exclude=''
 exclude_prefix='-type d -path'
 exclude_suffix='-prune -o'
+servers=$(find $log_directory -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 for server in $servers; do
-  if ! [ -s /tmp/$(basename $0).service-list.$server ]; then
+  if [ -z "$(find $log_directory/$server -type f | head -1)" ]; then
     exclude="$exclude $exclude_prefix $log_directory/$server $exclude_suffix"
   fi
 done
-rm /tmp/$(basename $0).service-list* &
 
 while read index size; do
   index_elasticsearch=$index
