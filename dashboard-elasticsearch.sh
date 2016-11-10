@@ -42,12 +42,7 @@ grep health $tmp >$tmp-reorder
 awk '$2 ~ /open/' $tmp | sort -V >>$tmp-reorder
 awk '$1 ~ /close/' $tmp | sort -V >>$tmp-reorder
 mv $tmp-reorder $tmp
-
-docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
-docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
-printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted >>$tmp
-
-sed -i 's/\(^health.*$\)/\1\tfile.size/' $tmp
+sed 's/\(^health.*$\)/\1\tfile.size/' $tmp | egrep 'health|kibana'
 
 
 # exclude unresponsively mounted servers from file size check
@@ -69,7 +64,11 @@ while read index size; do
   size_file=$(du -csh $(find $log_directory $exclude -type f -name \*$index\* -print) | grep total | awk '{print $1}')
   sed -i 's/\(^.*'$index_elasticsearch'.*$\)/\1\t'$size_file'/' $tmp
 done < <(curl -sS $address:$port/_cat/indices?v | grep logstash | awk '{print $3, $NF}' | sort)
-cat $tmp
+egrep -v 'health|kibana' $tmp
+
+docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
+docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
+printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted
 
 
 echo
