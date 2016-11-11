@@ -54,13 +54,13 @@ done
 exclude="$(echo $exclude | sed 's/^\s*//')"
 
 # indices output: logstash
-while read index size; do
+while read index; do
   index_elasticsearch=$index
   index=$(echo $index | cut -d- -f2)
   index=$(echo $index | sed 's/\.//g')
   size_file=$(du -csh $(find $log_directory $exclude -type f -name \*$index\* -print) | grep total | awk '{print $1}')
   sed -i 's/\(^.*'$index_elasticsearch'.*$\)/\1\t'$size_file'/' $tmp
-done < <(curl -sS $address:$port/_cat/indices?v | grep logstash | awk '{print $3, $NF}' | sort)
+done < <(curl -sS $address:$port/_cat/indices?v | grep logstash | awk '{print $3}' | sort)
 egrep -v 'health|kibana' $tmp
 
 # indices output: document totals
