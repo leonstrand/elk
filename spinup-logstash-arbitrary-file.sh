@@ -74,7 +74,7 @@ docker run -d \
   -v $directory/logstash/containers/$name/config:/config:ro \
   logstash \
   -f /config/ \
-  --debug \
+  --verbose \
   --auto-reload
 "
 echo $0: info: command:
@@ -88,44 +88,41 @@ echo
 echo docker ps -f name=$name
 docker ps -f name=$name
 
-# watch for event submission, exit if none in last five minutes
+# watch for pipeline start (processing begin), fail after about five minutes
 echo
 echo
-check_start_threshold=1000000
-check_threshold=1000
-loop_threshold=1000000
-timestamp_difference_threshold=300
+echo $0: info: $name status: processing begin \(pipeline start\)
+loop_threshold_pipeline=300
 loop=0
-echo $0: info: $name status: waiting for pipeline start
 until docker logs $name | grep ':message=>"starting pipeline",'; do
   loop=$(expr $loop + 1)
-  echo $0: debug: docker container $name starting pipeline loop $loop
-done
-while [ $loop -lt $loop_threshold ]; do
-  echo
-  echo
-  loop=$(expr $loop + 1)
-  for check in $(seq $check_threshold); do
-    echo $0: debug: check: $check
-    event="$(docker logs --details --timestamps --tail 1000 $name | grep ':message=>"Event now: ",' | tail -1)"
-    [ -n "$event" ] && break
-  done
-  echo $0: debug: event: $event
-  timestamp="$(echo $event | awk '{print $1}')"
-  echo $0: debug: timestamp: $timestamp
-  timestamp_event="$(date --date $timestamp '+%s')"
-  timestamp_now="$(date '+%s')"
-  echo $0: debug: timestamp_event: $timestamp_event
-  echo $0: debug: timestamp_now: $timestamp_now
-  timestamp_difference=$(expr $timestamp_now - $timestamp_event)
-  echo $0: debug: timestamp_difference: $timestamp_difference
-  if [ $timestamp_difference -ge $timestamp_difference_threshold ]; then
-    echo $0: debug: $timestamp_difference greater than or equal to $timestamp_difference_threshold
-    break
+  if [ $loop -ge $loop_threshold_pipeline ]; then
+    echo $0: fatal: loop count $loop equal to or greater than threshold $loop_threshold
+    exit 1
   fi
-  echo sleep 5
+  sleep 1
+done
+# watch for sincedb file data (processing end), fail after about a day (24 hours * 60 minutes * 60 seconds = 86400 / 5 second check interval = 17280)
+echo
+echo
+echo $0: info: $name status: waiting for processing end \(sincedb has size\)
+loop_threshold_sincedb=17280
+loop=0
+until [ -n "$(docker exec $name find /var/lib/logstash -type f -name '.sincedb_*' -exec cat {} \;)" ]; do
+  loop=$(expr $loop + 1)
+  if [ $loop -ge $loop_threshold_sincedb ]; then
+    echo $0: fatal: loop count $loop equal to or greater than threshold $loop_threshold
+    exit 1
+  fi
+  echo -n .
   sleep 5
 done
+echo
+echo
+echo
+echo $0: info: $name status: processing end \(sincedb has size\)
+echo $(docker exec $name find /var/lib/logstash -type f -name '.sincedb_*'): $(docker exec $name find /var/lib/logstash -type f -name '.sincedb_*' -exec cat {} \;)
+
 
 # stop docker container
 echo
