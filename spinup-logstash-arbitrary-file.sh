@@ -3,8 +3,8 @@
 # leonstrand@gmail.com
 
 
+# set initial variables
 directory=$(pwd)
-directory_logs=/pai-logs
 echo $0: debug: file: $file
 if [ -z "$1" ] || [ -n "$2" ]; then
   echo $0: fatal: must specify one and only one file
