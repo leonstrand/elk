@@ -5,6 +5,7 @@
 
 echo
 echo
+echo
 
 # set initial variables
 directory=$(pwd)
