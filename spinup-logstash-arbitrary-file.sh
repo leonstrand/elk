@@ -11,10 +11,6 @@ if [ -z "$1" ] || [ -n "$2" ]; then
   exit 1
 fi
 file="$1"
-if [ -z "$file" ]; then
-  echo $0: fatal: must specify file
-  exit 1
-fi
 if [ ! -f "$file" ]; then
   echo $0: fatal: $file is not a file
   exit 1
