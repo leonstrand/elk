@@ -3,14 +3,18 @@
 # leonstrand@gmail.com
 
 
+echo
+echo
+
 # set initial variables
 directory=$(pwd)
-echo $0: debug: file: $file
 if [ -z "$1" ] || [ -n "$2" ]; then
   echo $0: fatal: must specify one and only one file
   exit 1
 fi
 file="$1"
+echo -n $0: debug: file:\ 
+ls -alh $file
 if [ ! -f "$file" ]; then
   echo $0: fatal: $file is not a file
   exit 1
