@@ -139,4 +139,10 @@ echo
 echo
 echo docker rm $name
 docker rm $name
+
+# remove container files
+echo
+echo
+echo rm -rv $directory/logstash/containers/$name
+rm -rv $directory/logstash/containers/$name
 echo
