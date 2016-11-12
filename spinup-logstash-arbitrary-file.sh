@@ -104,7 +104,6 @@ done
 while [ $loop -lt $loop_threshold ]; do
   echo
   echo
-  # :message=>"starting pipeline",
   loop=$(expr $loop + 1)
   for check in $(seq $check_threshold); do
     echo $0: debug: check: $check
