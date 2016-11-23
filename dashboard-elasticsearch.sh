@@ -32,7 +32,7 @@ fi
 
 
 # indices output: index headers and kibana index
-tmp=/tmp/dashboard.sh.indices
+tmp=/tmp/dashboard.sh.indices.tmp
 echo curl -sS $address:$port/_cat/indices?v
 curl -sS $ip:19201/_cat/indices?v >$tmp
 sed 's/\(^health.*$\)/\1\tfile.size/' $tmp | egrep 'health|kibana'
@@ -52,23 +52,14 @@ done
 exclude="$(echo $exclude | sed 's/^\s*//')"
 
 # indices output: logstash
-# open indices
 while read index; do
   index_elasticsearch=$index
   index=$(echo $index | cut -d- -f2)
   index=$(echo $index | sed 's/\.//g')
   size_file=$(du -csh $(find $log_directory $exclude -type f -name \*$index\* -print) 2>/dev/null | grep total | awk '{print $1}')
   sed -i 's/\(^.*'$index_elasticsearch'.*$\)/\1\t'$size_file'/' $tmp
-done < <(grep '.*open.*logstash' $tmp | awk '{print $3}' | sort)
-# closed indices
-while read index; do
-  index_elasticsearch=$index
-  index=$(echo $index | cut -d- -f2)
-  index=$(echo $index | sed 's/\.//g')
-  size_file=$(du -csh $(find $log_directory $exclude -type f -name \*$index\* -print) 2>/dev/null | grep total | awk '{print $1}')
-  sed -i 's/\(^.*'$index_elasticsearch'.*$\)/\1\t'$size_file'/' $tmp
-done < <(grep '.*close.*logstash' $tmp | awk '{print $2}' | sort)
-egrep -v 'health|kibana' $tmp
+done < <(awk '{print $3}' $tmp)
+cat $tmp
 
 # indices output: document totals
 docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
