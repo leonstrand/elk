@@ -32,7 +32,7 @@ fi
 
 
 # indices output: index headers and kibana index
-tmp=/tmp/dashboard.sh.indices.tmp
+tmp=/tmp/dashboard.sh.indices
 echo curl -sS $address:$port/_cat/indices?v
 curl -sS $ip:19201/_cat/indices?v >$tmp
 sed 's/\(^health.*$\)/\1\tfile.size/' $tmp | egrep 'health|kibana'
