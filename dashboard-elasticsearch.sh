@@ -82,9 +82,15 @@ index_handle_close() {
 index_handle_open &
 index_handle_close &
 # show indices as soon as they're ready in order
+loop_threshold=1000000
 for i in $(grep -o 'logstash\S*' $tmp); do
+  loop=0
   until [ -f ${tmp}.$i ]; do
-    :
+    loop=$(expr $loop + 1)
+    if [ $loop -ge $loop_threshold ]; then
+      echo $0: fatal: loop count $loop met or exceeded threshold $loop_threshold while looking for index $i in temporary file $tmp
+      exit 1
+    fi
   done
   cat ${tmp}.$i
 done
