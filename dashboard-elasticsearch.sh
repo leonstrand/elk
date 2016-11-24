@@ -33,9 +33,11 @@ fi
 
 # indices output: index headers and kibana index
 tmp=/tmp/dashboard.sh.indices
+rm -f ${tmp}*
 echo curl -sS $address:$port/_cat/indices?v
 curl -sS $address:$port/_cat/indices?v >$tmp
-sed 's/\(^health.*$\)/\1\tfile.size/' $tmp | egrep 'health|kibana'
+printf '%s%s\n' "$(grep health $tmp)" 'file.size'
+grep kibana $tmp
 grep logstash $tmp | sort -k3 >>$tmp-reorder
 mv $tmp-reorder $tmp
 
@@ -57,19 +59,36 @@ index_handle() {
   index=$(echo $index | cut -d- -f2)
   index=$(echo $index | sed 's/\.//g')
   size_file=$(du -csh $(find $log_directory $exclude -type f -name \*$index\* -print) 2>/dev/null | grep total | awk '{print $1}')
-  sed -i 's/\(^.*'$index_elasticsearch'.*$\)/\1\t'$size_file'/' $tmp
-  sleep 0.2
+  size_file=$(echo $size_file | tr '[:upper:]' '[:lower:]')
+  size_file=$(echo $size_file | sed 's/k/kb/')
+  size_file=$(echo $size_file | sed 's/m/mb/')
+  size_file=$(echo $size_file | sed 's/g/gb/')
+  printf '%s%9s\n' "$(grep $index_elasticsearch $tmp)" $size_file >${tmp}.$index_elasticsearch
 }
 # open indices
-while read index; do
-  index_handle &
-done < <(grep '.*open.*logstash' $tmp | awk '{print $3}' | sort)
+index_handle_open() {
+  while read index; do
+    index_handle &
+  done < <(grep open $tmp | awk '{print $3}')
+  wait
+}
 # closed indices
-while read index; do
-  index_handle &
-done < <(grep '.*close.*logstash' $tmp | awk '{print $2}' | sort)
+index_handle_close() {
+  while read index; do
+    index_handle &
+  done < <(grep close $tmp | awk '{print $2}')
+  wait
+}
+index_handle_open &
+index_handle_close &
+# show indices as soon as they're ready in order
+for i in $(grep -o 'logstash\S*' $tmp); do
+  until [ -f ${tmp}.$i ]; do
+    :
+  done
+  cat ${tmp}.$i
+done
 wait
-cat $tmp
 
 # indices output: document totals
 docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
