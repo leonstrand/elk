@@ -32,7 +32,7 @@ fi
 
 
 # indices output: index headers and kibana index
-tmp=/tmp/dashboard.sh.indices
+tmp=/tmp/dashboard.sh.indices."$(head -c 16 /dev/urandom | md5sum | awk '{print $1}')"
 rm -f ${tmp}*
 echo curl -sS $address:$port/_cat/indices?v
 curl -sS $address:$port/_cat/indices?v >$tmp
@@ -101,6 +101,9 @@ docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
 docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
 printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted
 
+# clean up temporary files begin
+rm -f ${tmp}* &
+
 
 # output cluster summary, state, etc
 echo
@@ -133,3 +136,6 @@ for elasticsearch_node in $elasticsearch_nodes; do
   fi
   echo -e $node_ip'\t'$node_port'\t'$role
 done | sort -V
+
+# clean up temporary files end
+wait
