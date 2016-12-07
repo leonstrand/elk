@@ -14,16 +14,27 @@ if [ -z "$ip" ]; then
 fi
 
 
-echo
-echo $0: log directory handling
-log_directories=$(find $log_directory -mindepth 1 -maxdepth 1 -type d | sort)
-echo -e directory\\t\\tserver\\t\\tstatus
-for log_directory in $log_directories; do
-  echo -en $log_directory\\t
-  status=$(curl -sS http://$ip:8500/v1/health/checks/logstash | jq -r '.[] | select(.ServiceID=="'$(basename $log_directory)'") | select(.Status=="passing") | .Node + "\t" + .Status')
-  if [ -n "$status" ]; then
-    curl -sS http://$ip:8500/v1/health/checks/logstash | jq -r '.[] | select(.ServiceID=="'$(basename $log_directory)'") | select(.Status=="passing") | .Node + "\t" + .Status'
-  else
-    echo -e unknown\\t\\tunknown
-  fi
-done
+status="$(curl -sS http://$ip:8500/v1/health/checks/logstash)"
+case "$status" in
+  'No cluster leader')
+    echo $0: fatal: status: $status
+    echo $0: fatal: attempted status check with:
+    echo curl -sS http://$ip:8500/v1/health/checks/logstash
+    exit 1
+  ;;
+  *)
+    echo
+    echo $0: log directory handling
+    log_directories=$(find $log_directory -mindepth 1 -maxdepth 1 -type d | sort)
+    echo -e directory\\t\\tserver\\t\\tstatus
+    for log_directory in $log_directories; do
+    echo -en $log_directory\\t
+    status=$(curl -sS http://$ip:8500/v1/health/checks/logstash | jq -r '.[] | select(.ServiceID=="'$(basename $log_directory)'") | select(.Status=="passing") | .Node + "\t" + .Status')
+    if [ -n "$status" ]; then
+      curl -sS http://$ip:8500/v1/health/checks/logstash | jq -r '.[] | select(.ServiceID=="'$(basename $log_directory)'") | select(.Status=="passing") | .Node + "\t" + .Status'
+    else
+      echo -e unknown\\t\\tunknown
+    fi
+    done
+  ;;
+esac
