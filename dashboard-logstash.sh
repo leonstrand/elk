@@ -14,9 +14,9 @@ if [ -z "$ip" ]; then
 fi
 
 
-status="$(curl -sS http://$ip:8500/v1/health/checks/logstash)"
+status="$(curl -sS http://$ip:8500/v1/health/checks/logstash 2>/dev/null)"
 case "$status" in
-  'No cluster leader')
+  'No cluster leader'|'')
     echo $0: fatal: status: $status
     echo $0: fatal: attempted status check with:
     echo curl -sS http://$ip:8500/v1/health/checks/logstash
