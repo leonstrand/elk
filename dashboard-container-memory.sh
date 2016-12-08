@@ -14,12 +14,15 @@ consul() {
   printf '%-16s %8s\n' $(docker exec consul-1 ps -o comm,rss | grep consul)
 }
 logstash() {
-  echo
-  for container_id in $(docker ps -qf name=logstash); do
-    name=$(docker ps -f id=$container_id --format="{{.Names}}")
-    memory=$(docker exec $container_id ps -u logstash -o rss=)
-    printf '%-16s %8d\n' $name $memory
-  done | sort -V
+  container_ids=$(docker ps -qf name=logstash)
+  if [ -n "$container_ids" ]; then
+    echo
+    for container_id in $container_ids; do
+      name=$(docker ps -f id=$container_id --format="{{.Names}}")
+      memory=$(docker exec $container_id ps -u logstash -o rss=)
+      printf '%-16s %8d\n' $name $memory
+    done | sort -V
+  fi
 }
 elasticsearch() {
   echo
