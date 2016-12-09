@@ -32,7 +32,7 @@ fi
 
 
 # indices output: index headers and kibana index
-tmp=/tmp/dashboard.sh.indices."$(head -c 16 /dev/urandom | md5sum | awk '{print $1}')"
+tmp=/tmp/dashboard.sh.indices."$(date '+%N')"
 rm -f ${tmp}*
 echo curl -sS $address:$port/_cat/indices?v
 curl -sS $address:$port/_cat/indices?v >$tmp
