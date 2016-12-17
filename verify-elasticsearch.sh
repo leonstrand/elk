@@ -57,6 +57,7 @@ command_suffix='jq -C .'
 #echo tail -$tail_lines $pai_path
 #tail -$tail_lines $pai_path
 tail -$tail_lines $pai_path | while read event; do
+  [[ "$event" == '' ]] && continue
 
   #        "_index": "logstash-2016.12.06",
   #        "_type": "logs",
