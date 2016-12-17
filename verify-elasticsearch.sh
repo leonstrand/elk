@@ -19,8 +19,15 @@ compare() {
     #echo __input1 "$__input1" equal to __input2 "$__input2"
   }
   mismatch() {
-    echo __input1 "$__input1" not equal to __input2 "$__input2"
-    echo $event
+    echo mismatch
+    echo __input1 begin
+    echo __input1 "$__input1"
+    echo __input1 end
+    echo __input2 begin
+    echo __input2 "$__input2"
+    echo __input2 end
+    echo event: $event
+    echo response:
     echo $response | jq -C .
     continue
   }
