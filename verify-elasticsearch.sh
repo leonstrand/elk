@@ -42,6 +42,16 @@ compare() {
   esac
 }
 
+#logstash-2016.12.11/logs/_explain
+#_validate/query
+#_validate/query?explain
+objects='
+_search
+'
+command='curl'
+command_options='-sS -XGET'
+command_suffix='jq -C .'
+
 #echo
 #echo
 #echo tail -$tail_lines $pai_path
@@ -91,14 +101,6 @@ tail -$tail_lines $pai_path | while read event; do
   #echo pai_message: $pai_message
   #echo pai_service: $pai_service
   
-  #logstash-2016.12.11/logs/_explain
-  #_validate/query
-  #_validate/query?explain
-  objects='
-  _search
-  '
-  command='curl'
-  command_options='-sS -XGET'
   command_payload='{
     "query" : {
       "constant_score" : { 
@@ -119,7 +121,6 @@ tail -$tail_lines $pai_path | while read event; do
       }
     }
   }'
-  command_suffix='jq -C .'
   
   for object in $objects; do
     uri=$elasticsearch_host':'$elasticsearch_port'/'$object
