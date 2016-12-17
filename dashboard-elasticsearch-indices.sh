@@ -101,41 +101,5 @@ docs_count=$(egrep -v 'health|kibana' $tmp | awk '{sum += $6} END {print sum}')
 docs_deleted=$(egrep -v 'health|kibana' $tmp | awk '{sum += $7} END {print sum}')
 printf '%s %19s %12s\n' 'total documents excluding kibana' $docs_count $docs_deleted
 
-# clean up temporary files begin
-rm -f ${tmp}* &
-
-
-# output cluster summary, state, etc
-echo
-command='curl -sS '$address':'$port'/_cluster/state/version,master_node?pretty'
-echo $command
-eval $command
-
-
-# output elasticsearch nodes and roles
-echo
-echo $0: elasticsearch cluster nodes
-echo -e 'ip address\tport\trole'
-master_node=$(curl -sS $address:$port/_cluster/state/master_node?pretty | grep master_node | awk '{print $NF}' | tr -d \")
-elasticsearch_nodes=$(curl -sS $address:$port/_nodes/_all/http_address?pretty | grep -B1 '"name"' | egrep -v '"name"|^--' | awk '{print $1}' | tr -d \")
-for elasticsearch_node in $elasticsearch_nodes; do
-  http_address=$(curl -sS $address:$port/_nodes/$elasticsearch_node/http_address?pretty | grep '"http_address"' | awk '{print $NF}' | tr -d '",')
-  node_ip=$(echo $http_address | cut -d: -f1)
-  node_port=$(echo $http_address | cut -d: -f2)
-  role=
-  if [ "$master_node" == "$elasticsearch_node" ]; then
-    role='master, data'
-  else
-    if curl -sS $address:$port/_nodes/$elasticsearch_node/http_address?pretty | grep -A2 '"attributes"' | grep -v attributes | grep -q '"data" : "false"'; then
-      if curl -sS $address:$port/_nodes/$elasticsearch_node/http_address?pretty | grep -A2 '"attributes"' | grep -v attributes | grep -q '"master" : "false"'; then
-        role='loadbalancer'
-      fi
-    else
-      role='data'
-    fi
-  fi
-  echo -e $node_ip'\t'$node_port'\t'$role
-done | sort -V
-
-# clean up temporary files end
-wait
+# clean up temporary files
+rm -f ${tmp}*
