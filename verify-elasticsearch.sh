@@ -97,7 +97,6 @@ tail -$tail_lines $pai_path | while read event; do
     echo
     echo elasticsearch response
     $command $command_options $uri '-d' "$command_payload" | $command_suffix
-    $command $command_options $uri '-d' "$command_payload" | $command_suffix
   done
   
 done
