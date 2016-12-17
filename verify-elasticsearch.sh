@@ -96,7 +96,34 @@ tail -$tail_lines $pai_path | while read event; do
     #echo $command $command_options $uri '-d' \'$(echo $command_payload | jq -C .)\' \| $command_suffix
     echo
     echo elasticsearch response
-    $command $command_options $uri '-d' "$command_payload" | $command_suffix
+    response="$($command $command_options $uri '-d' "$command_payload")"
+    echo $response | jq -C .
+
+    echo
+    elk_hits="$(echo $response | jq '.hits | .total')"
+    echo elk_hits: $elk_hits
+
+    echo
+    echo elasticsearch fields
+    elk_timestamp="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .["@timestamp"]')"
+    elk_timestamp="$(echo $elk_timestamp | sed 's/Z$//')"
+    elk_path="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .path')"
+    elk_hostname="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Hostname')"
+    elk_process_id="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .ProcessID')"
+    elk_thread_id="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .ThreadID')"
+    elk_log_level="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Log_Level')"
+    elk_message_source="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Message_Source')"
+    elk_message="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Message')"
+    elk_service="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Service')"
+    echo elk_timestamp: $elk_timestamp
+    echo elk_path: $elk_path
+    echo elk_hostname: $elk_hostname
+    echo elk_process_id: $elk_process_id
+    echo elk_thread_id: $elk_thread_id
+    echo elk_log_level: $elk_log_level
+    echo elk_message_source: $elk_message_source
+    echo elk_message: $elk_message
+    echo elk_service: $elk_service
   done
   
 done
