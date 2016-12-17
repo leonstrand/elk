@@ -164,15 +164,15 @@ tail -$tail_lines $pai_path | while read event; do
 
     #echo
     #echo comparison
-    compare 'string'  "$pai_timestamp"		"$elk_timestamp"
-    compare 'string'  "$pai_path"		"$elk_path"
-    compare 'string'  "$pai_hostname"		"$elk_hostname"
-    compare 'integer' "$pai_process_id"		"$elk_process_id"
-    compare 'integer' "$pai_thread_id"		"$elk_thread_id"
-    compare 'string'  "$pai_log_level"		"$elk_log_level"
-    compare 'string'  "$pai_message_source"	"$elk_message_source"
-    compare 'string'  "$pai_message"		"$elk_message"
-    compare 'string'  "$pai_server"		"$elk_server"
+    compare 'string'  "$pai_timestamp"	    "$elk_timestamp"
+    compare 'string'  "$pai_path"	    "$elk_path"
+    compare 'string'  "$pai_hostname"	    "$elk_hostname"
+    compare 'integer' "$pai_process_id"	    "$elk_process_id"
+    compare 'integer' "$pai_thread_id"	    "$elk_thread_id"
+    compare 'string'  "$pai_log_level"	    "$elk_log_level"
+    compare 'string'  "$pai_message_source" "$elk_message_source"
+    compare 'string'  "$pai_message"	    "$elk_message"
+    compare 'string'  "$pai_server"	    "$elk_server"
   done
   
 done
