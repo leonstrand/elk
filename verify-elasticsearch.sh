@@ -8,12 +8,12 @@ elasticsearch_port='19206'
 
 #2016-12-14 12:22:55.2948|PAIAPPMV131|5436|44|Info|NServiceBus.Distributor.MSMQ.MsmqWorkerAvailabilityManager|Worker at 'mede.pai.ac.submission.gateway@PAIAPPV143' is available to take on more work.|
 pai_path=/pai-logs/PAIAPPMV131/PAI/logs/Mede.Pai.AC.Submission.Gateway.20161214.log
-tail_lines=2
+tail_lines=32
 
-echo
-echo
-echo tail -$tail_lines $pai_path
-tail -$tail_lines $pai_path
+#echo
+#echo
+#echo tail -$tail_lines $pai_path
+#tail -$tail_lines $pai_path
 tail -$tail_lines $pai_path | while read event; do
 
   #        "_index": "logstash-2016.12.06",
@@ -33,11 +33,11 @@ tail -$tail_lines $pai_path | while read event; do
   #          "Environment": "Production",
   #          "Service": "Mede.Pai.AC.Submission.Gateway"
   
-  echo
-  echo
-  echo event processing
+  #echo
+  #echo
+  #echo event processing
   event=$(echo $event | sed 's/\s*|\s*$//')
-  echo event: $event
+  #echo event: $event
   pai_timestamp=$(echo $event | awk -F\| '{print $1}')
   pai_hostname=$(echo $event | awk -F\| '{print $2}')
   pai_process_id=$(echo $event | awk -F\| '{print $3}')
@@ -49,15 +49,15 @@ tail -$tail_lines $pai_path | while read event; do
   pai_service=$pai_path
   pai_service=$(echo $pai_service | sed 's/^.*\///')
   pai_service=$(echo $pai_service | sed 's/\.[0-9]\{8\}.*$//')
-  echo pai_timestamp: $pai_timestamp
-  echo pai_path: $pai_path
-  echo pai_hostname: $pai_hostname
-  echo pai_process_id: $pai_process_id
-  echo pai_thread_id: $pai_thread_id
-  echo pai_log_level: $pai_log_level
-  echo pai_message_source: $pai_message_source
-  echo pai_message: $pai_message
-  echo pai_service: $pai_service
+  #echo pai_timestamp: $pai_timestamp
+  #echo pai_path: $pai_path
+  #echo pai_hostname: $pai_hostname
+  #echo pai_process_id: $pai_process_id
+  #echo pai_thread_id: $pai_thread_id
+  #echo pai_log_level: $pai_log_level
+  #echo pai_message_source: $pai_message_source
+  #echo pai_message: $pai_message
+  #echo pai_service: $pai_service
   
   #logstash-2016.12.11/logs/_explain
   #_validate/query
@@ -99,16 +99,16 @@ tail -$tail_lines $pai_path | while read event; do
     response="$($command $command_options $uri '-d' "$command_payload")"
     #echo $response | jq -C .
 
-    echo
+    #echo
     elk_hits="$(echo $response | jq '.hits | .total')"
-    echo elk_hits: $elk_hits
+    #echo elk_hits: $elk_hits
     if [ $elk_hits -ne 1 ]; then
       echo error: elk_hits $elk_hits not equal to 1
       continue
     fi
 
-    echo
-    echo elasticsearch fields
+    #echo
+    #echo elasticsearch fields
     elk_timestamp="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .["@timestamp"]')"
     elk_timestamp="$(echo $elk_timestamp | sed 's/Z$//')"
     elk_timestamp="$(date --date='TZ="America/San_Francisco" '$elk_timestamp'' '+%Y-%m-%dT%H:%M:%S.%N' | sed 's/0*$//')"
@@ -120,18 +120,18 @@ tail -$tail_lines $pai_path | while read event; do
     elk_message_source="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Message_Source')"
     elk_message="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Message')"
     elk_service="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Service')"
-    echo elk_timestamp: $elk_timestamp
-    echo elk_path: $elk_path
-    echo elk_hostname: $elk_hostname
-    echo elk_process_id: $elk_process_id
-    echo elk_thread_id: $elk_thread_id
-    echo elk_log_level: $elk_log_level
-    echo elk_message_source: $elk_message_source
-    echo elk_message: $elk_message
-    echo elk_service: $elk_service
+    #echo elk_timestamp: $elk_timestamp
+    #echo elk_path: $elk_path
+    #echo elk_hostname: $elk_hostname
+    #echo elk_process_id: $elk_process_id
+    #echo elk_thread_id: $elk_thread_id
+    #echo elk_log_level: $elk_log_level
+    #echo elk_message_source: $elk_message_source
+    #echo elk_message: $elk_message
+    #echo elk_service: $elk_service
 
-    echo
-    echo comparison
+    #echo
+    #echo comparison
     #elk_timestamp
     if [[ "$pai_timestamp" != "$elk_timestamp"* ]]; then
       echo pai_timestamp "$pai_timestamp" not equal to elk_timestamp "$elk_timestamp"
@@ -139,7 +139,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_timestamp "$pai_timestamp" equal to elk_timestamp "$elk_timestamp"
+      :
+      #echo pai_timestamp "$pai_timestamp" equal to elk_timestamp "$elk_timestamp"
     fi
     #elk_path
     if [[ "$pai_path" != "$elk_path" ]]; then
@@ -148,7 +149,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_path "$pai_path" equal to elk_path "$elk_path"
+      :
+      #echo pai_path "$pai_path" equal to elk_path "$elk_path"
     fi
     #elk_hostname
     if [[ "$pai_hostname" != "$elk_hostname" ]]; then
@@ -157,7 +159,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_hostname "$pai_hostname" equal to elk_hostname "$elk_hostname"
+      :
+      #echo pai_hostname "$pai_hostname" equal to elk_hostname "$elk_hostname"
     fi
     #elk_process_id
     if [[ "$pai_process_id" -ne "$elk_process_id" ]]; then
@@ -166,7 +169,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_process_id "$pai_process_id" equal to elk_process_id "$elk_process_id"
+      :
+      #echo pai_process_id "$pai_process_id" equal to elk_process_id "$elk_process_id"
     fi
     #elk_thread_id
     if [[ "$pai_thread_id" -ne "$elk_thread_id" ]]; then
@@ -175,7 +179,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_thread_id "$pai_thread_id" equal to elk_thread_id "$elk_thread_id"
+      :
+      #echo pai_thread_id "$pai_thread_id" equal to elk_thread_id "$elk_thread_id"
     fi
     #elk_log_level
     if [[ "$pai_log_level" != "$elk_log_level" ]]; then
@@ -184,7 +189,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_log_level "$pai_log_level" equal to elk_log_level "$elk_log_level"
+      :
+      #echo pai_log_level "$pai_log_level" equal to elk_log_level "$elk_log_level"
     fi
     #elk_message_source
     if [[ "$pai_message_source" != "$elk_message_source" ]]; then
@@ -193,7 +199,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_message_source "$pai_message_source" equal to elk_message_source "$elk_message_source"
+      :
+      #echo pai_message_source "$pai_message_source" equal to elk_message_source "$elk_message_source"
     fi
     #elk_message
     if [[ "$pai_message" != "$elk_message" ]]; then
@@ -202,7 +209,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_message "$pai_message" equal to elk_message "$elk_message"
+      :
+      #echo pai_message "$pai_message" equal to elk_message "$elk_message"
     fi
     #elk_service
     if [[ "$pai_service" != "$elk_service" ]]; then
@@ -211,7 +219,8 @@ tail -$tail_lines $pai_path | while read event; do
       echo $response | jq -C .
       continue
     else
-      echo pai_service "$pai_service" equal to elk_service "$elk_service"
+      :
+      #echo pai_service "$pai_service" equal to elk_service "$elk_service"
     fi
   done
   
