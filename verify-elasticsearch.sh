@@ -94,19 +94,24 @@ tail -$tail_lines $pai_path | while read event; do
     #echo
     #echo elasticsearch request
     #echo $command $command_options $uri '-d' \'$(echo $command_payload | jq -C .)\' \| $command_suffix
-    echo
-    echo elasticsearch response
+    #echo
+    #echo elasticsearch response
     response="$($command $command_options $uri '-d' "$command_payload")"
-    echo $response | jq -C .
+    #echo $response | jq -C .
 
     echo
     elk_hits="$(echo $response | jq '.hits | .total')"
     echo elk_hits: $elk_hits
+    if [ $elk_hits -ne 1 ]; then
+      echo error: elk_hits $elk_hits not equal to 1
+      continue
+    fi
 
     echo
     echo elasticsearch fields
     elk_timestamp="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .["@timestamp"]')"
     elk_timestamp="$(echo $elk_timestamp | sed 's/Z$//')"
+    elk_timestamp="$(date --date='TZ="America/San_Francisco" '$elk_timestamp'' '+%Y-%m-%dT%H:%M:%S.%N' | sed 's/0*$//')"
     elk_path="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .path')"
     elk_hostname="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .Hostname')"
     elk_process_id="$(echo $response | jq -r '.hits | .hits | .[] | ._source | .ProcessID')"
@@ -124,6 +129,90 @@ tail -$tail_lines $pai_path | while read event; do
     echo elk_message_source: $elk_message_source
     echo elk_message: $elk_message
     echo elk_service: $elk_service
+
+    echo
+    echo comparison
+    #elk_timestamp
+    if [[ "$pai_timestamp" != "$elk_timestamp"* ]]; then
+      echo pai_timestamp "$pai_timestamp" not equal to elk_timestamp "$elk_timestamp"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_timestamp "$pai_timestamp" equal to elk_timestamp "$elk_timestamp"
+    fi
+    #elk_path
+    if [[ "$pai_path" != "$elk_path" ]]; then
+      echo pai_path "$pai_path" not equal to elk_path "$elk_path"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_path "$pai_path" equal to elk_path "$elk_path"
+    fi
+    #elk_hostname
+    if [[ "$pai_hostname" != "$elk_hostname" ]]; then
+      echo pai_hostname "$pai_hostname" not equal to elk_hostname "$elk_hostname"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_hostname "$pai_hostname" equal to elk_hostname "$elk_hostname"
+    fi
+    #elk_process_id
+    if [[ "$pai_process_id" -ne "$elk_process_id" ]]; then
+      echo pai_process_id "$pai_process_id" not equal to elk_process_id "$elk_process_id"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_process_id "$pai_process_id" equal to elk_process_id "$elk_process_id"
+    fi
+    #elk_thread_id
+    if [[ "$pai_thread_id" -ne "$elk_thread_id" ]]; then
+      echo pai_thread_id "$pai_thread_id" not equal to elk_thread_id "$elk_thread_id"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_thread_id "$pai_thread_id" equal to elk_thread_id "$elk_thread_id"
+    fi
+    #elk_log_level
+    if [[ "$pai_log_level" != "$elk_log_level" ]]; then
+      echo pai_log_level "$pai_log_level" not equal to elk_log_level "$elk_log_level"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_log_level "$pai_log_level" equal to elk_log_level "$elk_log_level"
+    fi
+    #elk_message_source
+    if [[ "$pai_message_source" != "$elk_message_source" ]]; then
+      echo pai_message_source "$pai_message_source" not equal to elk_message_source "$elk_message_source"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_message_source "$pai_message_source" equal to elk_message_source "$elk_message_source"
+    fi
+    #elk_message
+    if [[ "$pai_message" != "$elk_message" ]]; then
+      echo pai_message "$pai_message" not equal to elk_message "$elk_message"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_message "$pai_message" equal to elk_message "$elk_message"
+    fi
+    #elk_service
+    if [[ "$pai_service" != "$elk_service" ]]; then
+      echo pai_service "$pai_service" not equal to elk_service "$elk_service"
+      echo $event
+      echo $response | jq -C .
+      continue
+    else
+      echo pai_service "$pai_service" equal to elk_service "$elk_service"
+    fi
   done
   
 done
