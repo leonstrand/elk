@@ -10,6 +10,38 @@ elasticsearch_port='19206'
 pai_path=/pai-logs/PAIAPPMV131/PAI/logs/Mede.Pai.AC.Submission.Gateway.20161214.log
 tail_lines=32
 
+compare() {
+  __type=$1
+  __input1=$2
+  __input2=$3
+  match() {
+    :
+    #echo __input1 "$__input1" equal to __input2 "$__input2"
+  }
+  mismatch() {
+    echo __input1 "$__input1" not equal to __input2 "$__input2"
+    echo $event
+    echo $response | jq -C .
+    continue
+  }
+  case $__type in
+    'numeric')
+      if [[ "$__input1" -ne "$__input2" ]]; then
+        mismatch
+      else
+        match
+      fi
+    ;;
+    'string')
+      if [[ "$__input1" != "$__input2"* ]]; then
+        mismatch
+      else
+        match
+      fi
+    ;;
+  esac
+}
+
 #echo
 #echo
 #echo tail -$tail_lines $pai_path
@@ -132,16 +164,7 @@ tail -$tail_lines $pai_path | while read event; do
 
     #echo
     #echo comparison
-    #elk_timestamp
-    if [[ "$pai_timestamp" != "$elk_timestamp"* ]]; then
-      echo pai_timestamp "$pai_timestamp" not equal to elk_timestamp "$elk_timestamp"
-      echo $event
-      echo $response | jq -C .
-      continue
-    else
-      :
-      #echo pai_timestamp "$pai_timestamp" equal to elk_timestamp "$elk_timestamp"
-    fi
+    compare 'string' "$pai_timestamp" "$elk_timestamp"
     #elk_path
     if [[ "$pai_path" != "$elk_path" ]]; then
       echo pai_path "$pai_path" not equal to elk_path "$elk_path"
