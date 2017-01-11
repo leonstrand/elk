@@ -1,12 +1,11 @@
 {
   "template" : "logstash-*",
   "settings" : {
-    "index.refresh_interval" : "5s",
-    "index.codec" : "best_compression"
+    "index.refresh_interval" : "5s"
   },
   "mappings" : {
     "_default_" : {
-      "_all" : {"enabled" : false, "omit_norms" : true},
+      "_all" : {"enabled" : true, "omit_norms" : true},
       "dynamic_templates" : [ {
         "message_field" : {
           "match" : "message",
