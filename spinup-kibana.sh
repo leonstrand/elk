@@ -6,6 +6,7 @@
 name='kibana'
 directory=$(pwd)
 name_elasticsearch='elasticsearch'
+elasticsearch_cluster_name='elasticsearch-mede'
 
 
 echo
@@ -68,7 +69,7 @@ docker run -d \
   -Des.node.name=$(hostname)-$next_container_elasticsearch_loadbalancer \
   -Des.node.master=false \
   -Des.node.data=false \
-  -Des.cluster.name=elasticsearch-pai \
+  -Des.cluster.name=$elasticsearch_cluster_name \
   -Dnetwork.publish_host=$ip \
   -Dhttp.publish_port=$next_http_port \
   -Dtransport.publish_port=$next_transport_port \
