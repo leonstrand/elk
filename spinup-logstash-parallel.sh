@@ -110,7 +110,7 @@ curl -v -X PUT http://$ip:8500/v1/agent/service/register \
       }
     ]
   }' \
-$name \
+$consul_service_name \
 $server \
 $ip)"
 
