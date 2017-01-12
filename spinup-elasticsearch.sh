@@ -76,7 +76,7 @@ docker run -d \
   elasticsearch \
   -Dnetwork.host=0.0.0.0 \
   -Des.node.name=$(hostname)-$next_container \
-  -Des.cluster.name=elasticsearch-pai \
+  -Des.cluster.name=elasticsearch-mede \
   -Dnetwork.publish_host=$ip \
   -Dhttp.publish_port=$next_http_port \
   -Dtransport.publish_port=$next_transport_port \
