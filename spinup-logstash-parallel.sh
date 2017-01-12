@@ -81,7 +81,7 @@ echo $command
 result=$(eval $command)
 echo $0: info: result: $result
 
-# consul registeration
+# consul registration
 echo
 echo
 echo $0: registering logstash with consul
