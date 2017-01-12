@@ -11,7 +11,7 @@ server="$2"
 
 # determine ip address
 ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
-service_name='logstash'
+consul_service_name='logstash-pai'
 
 # get list of server log directories
 echo
@@ -96,7 +96,7 @@ echo curl -v -X PUT http://$ip:8500/v1/agent/service/register \
       }
     ]
   }'\' \
-$service_name \
+$consul_service_name \
 $server \
 $ip)"
 curl -v -X PUT http://$ip:8500/v1/agent/service/register \
