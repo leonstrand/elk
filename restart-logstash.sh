@@ -49,7 +49,7 @@ for container in $containers; do
 done
 
 # consul registration
-service_name='logstash'
+service_name='logstash-pai'
 server=$(grep path $directory/logstash/containers/$container/config/100-input-logstash.conf | awk '{print $NF}' | cut -d/ -f3)
 echo
 echo
