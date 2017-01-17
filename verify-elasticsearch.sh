@@ -7,7 +7,15 @@ elasticsearch_host='10.153.13.35'
 elasticsearch_port='19206'
 
 #2016-12-14 12:22:55.2948|PAIAPPMV131|5436|44|Info|NServiceBus.Distributor.MSMQ.MsmqWorkerAvailabilityManager|Worker at 'mede.pai.ac.submission.gateway@PAIAPPV143' is available to take on more work.|
-pai_path=/pai-logs/PAIAPPMV131/PAI/logs/Mede.Pai.AC.Submission.Gateway.20161214.log
+#pai_path=/pai-logs/PAIAPPMV131/PAI/logs/Mede.Pai.AC.Submission.Gateway.20161214.log
+if [ -z "$1" ]; then
+  pai_path="$(find /pai-logs -type f -mtime -1 | head -1)"
+else
+  if [ -f "$1" ]; then
+    pai_path="$1"
+  fi
+fi
+echo $0: pai_path: $pai_path
 tail_lines=32
 mismatches=0
 
