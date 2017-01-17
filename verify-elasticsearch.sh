@@ -9,6 +9,7 @@ elasticsearch_port='19206'
 #2016-12-14 12:22:55.2948|PAIAPPMV131|5436|44|Info|NServiceBus.Distributor.MSMQ.MsmqWorkerAvailabilityManager|Worker at 'mede.pai.ac.submission.gateway@PAIAPPV143' is available to take on more work.|
 pai_path=/pai-logs/PAIAPPMV131/PAI/logs/Mede.Pai.AC.Submission.Gateway.20161214.log
 tail_lines=32
+mismatches=0
 
 compare() {
   __type=$1
@@ -19,6 +20,8 @@ compare() {
     #echo __input1 "$__input1" equal to __input2 "$__input2"
   }
   mismatch() {
+    mismatches=$(expr $mismatches + 1)
+    echo mismatches: $mismatches
     echo mismatch
     echo __input1 begin
     echo __input1 "$__input1"
@@ -185,3 +188,5 @@ tail -$tail_lines $pai_path | while read event; do
   done
   
 done
+
+echo mismatches: $mismatches
