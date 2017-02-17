@@ -32,11 +32,11 @@ work() {
   if [ -z "$null_check" ]; then
     echo $0: info: no files found, nothing to process
   else
-  echo
-  echo $0: spinning up one logstash container per matching file in parallel
-  echo $0: parallelism limited to twice the number of cpu cores at a time
-  echo cd $directory_work \&\& find "$directory_data" -type f -name \\*"$__date"\\* \| time parallel --jobs 200% time ./spinup-logstash-arbitrary-file.sh {} 2\>\&1 \| tee log/spinup-logstash-arbitrary-file.sh.log."$__date"
-  #cd $directory_work && find "$directory_data" -type f -name \*"$__date"\* | time parallel --jobs 200% time ./spinup-logstash-arbitrary-file.sh {} 2>&1 | tee log/spinup-logstash-arbitrary-file.sh.log."$__date"
+    echo
+    echo $0: spinning up one logstash container per matching file in parallel
+    echo $0: parallelism limited to twice the number of cpu cores at a time
+    echo cd $directory_work \&\& find "$directory_data" -type f -name \\*"$__date"\\* \| time parallel --jobs 200% time ./spinup-logstash-arbitrary-file.sh {} 2\>\&1 \| tee log/spinup-logstash-arbitrary-file.sh.log."$__date"
+    #cd $directory_work && find "$directory_data" -type f -name \*"$__date"\* | time parallel --jobs 200% time ./spinup-logstash-arbitrary-file.sh {} 2>&1 | tee log/spinup-logstash-arbitrary-file.sh.log."$__date"
   fi
 }
 
