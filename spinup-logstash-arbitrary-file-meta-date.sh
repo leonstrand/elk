@@ -13,9 +13,9 @@ if [ -z "$directory_data" ] || ! [ -d "$directory_data" ] || [ -z "$date" ] || [
   exit 1
 fi
 dates="
-$date
-$(echo $date | sed 's/\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)/\1-\2-\3/')
-$(echo $date | sed 's/\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)/\1.\2.\3/')
+  $date
+  $(echo $date | sed 's/\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)/\1-\2-\3/')
+  $(echo $date | sed 's/\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)\([[:digit:]][[:digit:]]\)/\1.\2.\3/')
 "
 
 work() {
