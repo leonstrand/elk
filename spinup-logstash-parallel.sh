@@ -73,8 +73,7 @@ docker run -d \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
   logstash \
-  -f /config/ \
-  --auto-reload
+  -f /config/
 "
 echo $0: info: command:
 echo $command

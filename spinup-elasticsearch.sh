@@ -66,23 +66,21 @@ echo
 echo $0: info: starting container $next_container
 command="
 docker run -d \
-  --user $(id -u):$(id -g) \
   --name $next_container \
   --label $name \
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
-  -e ES_HEAP_SIZE=$heap_size
+  -e ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xms$heap_size -Xmx$heap_size\" \
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
   elasticsearch \
-  -Dnetwork.host=0.0.0.0 \
-  -Des.node.name=$(hostname)-$next_container \
-  -Des.cluster.name=elasticsearch-mede \
-  -Dnetwork.publish_host=$ip \
-  -Dhttp.publish_port=$next_http_port \
-  -Dtransport.publish_port=$next_transport_port \
-  -Des.discovery.zen.ping.multicast.enabled=false \
-  -Des.discovery.zen.ping.unicast.hosts=$unicast_hosts \
-  -Dindex.codec=best_compression
+  -Enetwork.host=0.0.0.0 \
+  -Enode.name=$(hostname)-$next_container \
+  -Ecluster.name=elasticsearch-mede \
+  -Enetwork.publish_host=$ip \
+  -Ehttp.publish_port=$next_http_port \
+  -Etransport.publish_port=$next_transport_port \
+  -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts \
+  -Eindex.codec=best_compression
 "
   #-Des.node.master=false \
   #-Des.node.data=false \

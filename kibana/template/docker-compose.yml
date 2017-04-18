@@ -2,6 +2,6 @@ kibana:
   build: .
   container_name: REPLACE_KIBANA_CONTAINER
   volumes:
-    - ./config/:/opt/kibana/config/
+    - ./config/:/etc/kibana/
   ports:
     - "5601:5601"

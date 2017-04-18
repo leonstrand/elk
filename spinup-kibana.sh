@@ -65,17 +65,16 @@ docker run -d \
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
   elasticsearch \
-  -Dnetwork.host=0.0.0.0 \
-  -Des.node.name=$(hostname)-$next_container_elasticsearch_loadbalancer \
-  -Des.node.master=false \
-  -Des.node.data=false \
-  -Des.cluster.name=$elasticsearch_cluster_name \
-  -Dnetwork.publish_host=$ip \
-  -Dhttp.publish_port=$next_http_port \
-  -Dtransport.publish_port=$next_transport_port \
-  -Des.discovery.zen.ping.multicast.enabled=false \
-  -Des.discovery.zen.ping.unicast.hosts=$unicast_hosts \
-  -Dindex.codec=best_compression
+  -Enetwork.host=0.0.0.0 \
+  -Enode.name=$(hostname)-$next_container_elasticsearch_loadbalancer \
+  -Enode.master=false \
+  -Enode.data=false \
+  -Ecluster.name=$elasticsearch_cluster_name \
+  -Enetwork.publish_host=$ip \
+  -Ehttp.publish_port=$next_http_port \
+  -Etransport.publish_port=$next_transport_port \
+  -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts \
+  -Eindex.codec=best_compression
 "
 echo $0: info: command:
 echo $command
