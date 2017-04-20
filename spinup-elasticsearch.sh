@@ -10,7 +10,6 @@ elasticsearch_indices_path=/elk
 
 # determine container name
 name='elasticsearch'
-heap_size='31g'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
@@ -18,7 +17,6 @@ else
   next_container=${name}-$(expr $(echo $last_container | awk 'BEGIN { FS = "-" } ; { print $NF }') + 1)
 fi
 echo $0: info: container name: $next_container
-echo $0: info: heap size: $heap_size
 
 # determine ip address
 ip=$(ip -o -4 address | awk '$2 !~ /lo|docker/ {print $4}' | head -1 | cut -d/ -f1)
@@ -70,7 +68,6 @@ docker run -d \
   --label $name \
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
-  -e ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xms$heap_size -Xmx$heap_size\" \
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
   elasticsearch \
   -Enetwork.host=0.0.0.0 \
