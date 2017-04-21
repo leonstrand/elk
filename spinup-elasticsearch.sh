@@ -63,20 +63,20 @@ echo
 echo
 echo $0: info: starting container $next_container
 command="
-docker run -d \
-  --name $next_container \
-  --label $name \
-  -p $next_http_port:9200 \
-  -p $next_transport_port:9300 \
+docker run -d
+  --name $next_container
+  --label $name
+  -p $next_http_port:9200
+  -p $next_transport_port:9300
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
-  elasticsearch \
-  -Enetwork.host=0.0.0.0 \
-  -Enode.name=$(hostname)-$next_container \
-  -Ecluster.name=elasticsearch-mede \
-  -Enetwork.publish_host=$ip \
-  -Ehttp.publish_port=$next_http_port \
-  -Etransport.publish_port=$next_transport_port \
-  -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts \
+  elasticsearch
+  -Enetwork.host=0.0.0.0
+  -Enode.name=$(hostname)-$next_container
+  -Ecluster.name=elasticsearch-mede
+  -Enetwork.publish_host=$ip
+  -Ehttp.publish_port=$next_http_port
+  -Etransport.publish_port=$next_transport_port
+  -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts
   -Eindex.codec=best_compression
 "
   #-Des.node.master=false \
