@@ -6,8 +6,8 @@
 types='
 consul
 elasticsearch
-logstash
 kibana
+logstash
 '
 
 output_memory_in_megabytes() {
@@ -47,7 +47,6 @@ kibana() {
 }
 
 
-consul
-logstash
-elasticsearch
-kibana
+for type in $types; do
+  $type
+done
