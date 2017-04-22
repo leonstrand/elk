@@ -28,7 +28,7 @@ elasticsearch() {
   echo
   for container_id in $(docker ps -qf label=elasticsearch); do
     name=$(docker ps -f id=$container_id --format="{{.Names}}")
-    memory=$(docker exec -it $container_id ps -u elasticsearch -o rss --no-headers | tr -cd '[:print:]')
+    memory=$(docker exec $container_id ps -u elasticsearch -o rss --no-headers | tr -cd '[:print:]')
     printf '%-16s %8d\n' $name $memory
   done | sort -V
 }
