@@ -12,10 +12,10 @@ kibana
 
 output_memory_in_megabytes() {
   memory=$(echo 'scale=0;('$memory'+500)/1000' | bc)
-  printf '%-16s %8s\n' $name ${memory}m
+  printf '%-16s %5s\n' $name ${memory}m
 }
 consul() {
-  printf '%-16s %8s\n' $(docker exec consul-1 ps -o comm,rss | grep consul)
+  printf '%-16s %5s\n' $(docker exec consul-1 ps -o comm,rss | grep consul)
 }
 logstash() {
   container_ids=$(docker ps -qf name=logstash)
