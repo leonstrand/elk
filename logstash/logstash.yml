@@ -90,7 +90,7 @@ path.data: /var/lib/logstash
 # Internal queuing model, "memory" for legacy in-memory based queuing and
 # "persisted" for disk-based acked queueing. Defaults is memory
 #
-# queue.type: memory
+queue.type: persisted
 #
 # If using queue.type: persisted, the directory path where the data files will be stored.
 # Default is path.data/queue
@@ -114,7 +114,7 @@ path.data: /var/lib/logstash
 # whichever criteria is reached first
 # Default is 1024mb or 1gb
 #
-# queue.max_bytes: 1024mb
+queue.max_bytes: 8096mb
 #
 # If using queue.type: persisted, the maximum number of acked events before forcing a checkpoint
 # Default is 1024, 0 for unlimited

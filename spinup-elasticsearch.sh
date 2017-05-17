@@ -7,6 +7,7 @@ echo
 echo
 
 elasticsearch_indices_path=/elk
+directory=$(pwd)
 
 # determine container name
 name='elasticsearch'
@@ -69,6 +70,7 @@ docker run -d
   -p $next_http_port:9200
   -p $next_transport_port:9300
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
+  -v $directory/elasticsearch/jvm.options:/etc/elasticsearch/jvm.options:ro
   elasticsearch
   -Enetwork.host=0.0.0.0
   -Enode.name=$(hostname)-$next_container
