@@ -3,6 +3,8 @@
 # leonstrand@gmail.com
 
 
+directory_data=/elk
+
 echo
 echo
 echo
@@ -66,6 +68,14 @@ echo $0: info: configuring logstash output
 echo $0: info: logstash configuration file: $directory/logstash/containers/$name/config/300-output-logstash.conf
 sed 's/REPLACE/'$elasticsearch_hosts'/' $directory/logstash/template/300-output-logstash.conf | tee $directory/logstash/containers/$name/config/300-output-logstash.conf
 
+# prepare data directory
+echo
+echo
+echo $0: info: preparing data directory
+[ -d $directory_data/logstash/$name ] && rm -rv $directory_data/logstash/$name
+echo mkdir -vpm 777 $directory_data/logstash/$name/data
+mkdir -vpm 777 $directory_data/logstash/$name/data
+
 # spin up logstash container
 echo
 echo
@@ -77,10 +87,11 @@ docker run -d \
   -v /pai-logs:/pai-logs:ro \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json:ro \
   -v $directory/logstash/containers/$name/config:/config:ro \
+  -v $directory/logstash/logstash.yml:/etc/logstash/logstash.yml:ro \
+  -v $directory_data/logstash/$name/data:/usr/share/logstash/data \
   logstash \
   -f /config/ \
-  --verbose \
-  --auto-reload
+  --verbose
 "
 echo $0: info: command:
 echo $command
@@ -99,10 +110,10 @@ echo
 echo $0: info: $name status: processing begin \(pipeline start\)
 loop_threshold_pipeline=300
 loop=0
-until docker logs $name | grep ':message=>"starting pipeline",'; do
+until docker logs $name | grep 'logstash.pipeline - Pipeline main started'; do
   loop=$(expr $loop + 1)
   if [ $loop -ge $loop_threshold_pipeline ]; then
-    echo $0: fatal: loop count $loop equal to or greater than threshold $loop_threshold
+    echo $0: fatal: pipeline loop count $loop equal to or greater than threshold $loop_threshold
     exit 1
   fi
   sleep 1
@@ -116,7 +127,7 @@ loop=0
 until [ -n "$(docker exec $name find /var/lib/logstash -type f -name '.sincedb_*' -exec cat {} \;)" ]; do
   loop=$(expr $loop + 1)
   if [ $loop -ge $loop_threshold_sincedb ]; then
-    echo $0: fatal: loop count $loop equal to or greater than threshold $loop_threshold
+    echo $0: fatal: sincedb loop count $loop equal to or greater than threshold $loop_threshold
     exit 1
   fi
   echo -n .

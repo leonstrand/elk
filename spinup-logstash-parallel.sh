@@ -6,6 +6,7 @@
 name='logstash'
 directory=$(pwd)
 directory_logs=/pai-logs
+directory_data=/elk
 container_name="$1"
 server="$2"
 
@@ -61,6 +62,15 @@ sed 's/REPLACE_CONSUL_HOST/'$ip'/' logstash/template/400-heartbeat-logstash.conf
 sed -i 's/REPLACE_LOGSTASH_SERVER/'$server'/' $directory/logstash/containers/$next_container/config/400-heartbeat-logstash.conf
 cat $directory/logstash/containers/$next_container/config/400-heartbeat-logstash.conf
 
+# prepare data directory
+echo
+echo
+echo $0: info: preparing data directory
+[ -d $directory_data/logstash/$next_container ] && rm -rv $directory_data/logstash/$next_container
+echo mkdir -vpm 777 $directory_data/logstash/$next_container/data
+mkdir -vpm 777 $directory_data/logstash/$next_container/data
+
+
 # spin up logstash container
 echo
 echo
@@ -72,6 +82,8 @@ docker run -d \
   -v /pai-logs:/pai-logs \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
+  -v $directory/logstash/logstash.yml:/etc/logstash/logstash.yml:ro \
+  -v $directory_data/logstash/$next_container/data:/usr/share/logstash/data \
   logstash \
   -f /config/
 "
