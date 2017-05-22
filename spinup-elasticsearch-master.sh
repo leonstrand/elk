@@ -82,8 +82,8 @@ docker run -d
   -Enode.master=true
   -Enode.data=false
   -Enode.ingest=false
-  -Ediscovery.zen.minimum_master_nodes=2
 "
+  #-Ediscovery.zen.minimum_master_nodes=2
 echo $0: info: command:
 echo $command
 result=$(eval $command)
