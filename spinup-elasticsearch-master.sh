@@ -70,7 +70,6 @@ docker run -d
   -p $next_http_port:9200
   -p $next_transport_port:9300
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
-  -v $directory/elasticsearch/jvm.options:/etc/elasticsearch/jvm.options:ro
   elasticsearch
   -Enetwork.host=0.0.0.0
   -Enode.name=$(hostname)-$next_container
@@ -80,9 +79,11 @@ docker run -d
   -Etransport.publish_port=$next_transport_port
   -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts
   -Eindex.codec=best_compression
+  -Enode.master=true
+  -Enode.data=false
+  -Enode.ingest=false
+  -Ediscovery.zen.minimum_master_nodes=2
 "
-  #-Des.node.master=false \
-  #-Des.node.data=false \
 echo $0: info: command:
 echo $command
 result=$(eval $command)
