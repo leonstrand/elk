@@ -18,7 +18,7 @@ consul() {
   printf '%-16s %6s\n' $(docker exec consul-1 ps -o comm,rss | grep consul)
 }
 logstash() {
-  container_ids=$(docker ps -qf name=logstash)
+  container_ids=$(docker ps -qf label=logstash)
   if [ -n "$container_ids" ]; then
     echo
     for container_id in $container_ids; do

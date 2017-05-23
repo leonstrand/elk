@@ -71,6 +71,7 @@ echo $0: info: starting container $next_container_elasticsearch_ingest
 command="
 docker run -d \
   --name $next_container_elasticsearch_ingest \
+  --label elasticsearch
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
   elasticsearch \
@@ -250,6 +251,7 @@ echo $0: info: starting container $next_container
 command="
 docker run -d \
   --name $next_container \
+  --label $name \
   -e LS_HEAP_SIZE=2048m \
   -v /pai-logs:/pai-logs \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
