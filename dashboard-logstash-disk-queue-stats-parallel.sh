@@ -12,4 +12,4 @@ work() {
 }
 export -f work
 printf '%33s %14s %9s %9s %9s %9s %14s\n' container 'duration (ms)' in filtered out 'in - out' 'in - filtered'
-parallel -k work ::: $(for i in $(docker ps --filter name=logstash --format {{.Names}} | sort -V); do echo $i; done)
+parallel -k work ::: $(for i in $(docker ps --filter label=logstash --format {{.Names}} | sort -V); do echo $i; done)
