@@ -256,6 +256,7 @@ docker run -d \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
   -v $directory/logstash/logstash.yml:/etc/logstash/logstash.yml:ro \
+  -v $directory/logstash/jvm.options:/etc/logstash/jvm.options:ro \
   -v $directory_data/logstash/$next_container/data:/usr/share/logstash/data \
   logstash \
   -f /config/
