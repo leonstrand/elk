@@ -253,7 +253,7 @@ docker run -d \
   --name $next_container \
   --label $name \
   --ulimit nofile=612174 \
-  --ulimit nproc=unlimited \
+  --ulimit nproc=612174 \
   -v /pai-logs:/pai-logs \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
