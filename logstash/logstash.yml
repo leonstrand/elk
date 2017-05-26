@@ -153,6 +153,7 @@ queue.max_bytes: 8096mb
 #   * trace
 #
 # log.level: info
+log.level: debug
 path.logs: /var/log/logstash
 #
 # ------------ Other Settings --------------
