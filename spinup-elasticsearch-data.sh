@@ -82,7 +82,7 @@ docker run -d
   -Eindex.codec=best_compression
   -Enode.master=false
   -Enode.data=true
-  -Enode.ingest=false
+  -Enode.ingest=true
 "
   #-Ediscovery.zen.minimum_master_nodes=2
 echo $0: info: command:
