@@ -10,7 +10,7 @@ elasticsearch_indices_path=/elk
 directory=$(pwd)
 
 # determine container name
-name='elasticsearch'
+name='elasticsearch-master'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
