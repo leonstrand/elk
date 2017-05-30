@@ -10,8 +10,9 @@ elasticsearch_indices_path=/elk
 directory=$(pwd)
 
 # determine container name
-name='elasticsearch'
-last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
+name='elasticsearch-data-ingest'
+label='elasticsearch'
+last_container=$(docker ps -af name=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
 else
@@ -25,7 +26,7 @@ echo $0: info: network publish host: $ip
 
 # select next free http port over $base_port
 base_port=10000
-last_http_port=$(for i in $(docker ps -qf name=$name); do docker port $i | awk '/^9200/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
+last_http_port=$(for i in $(docker ps -qf label=$label); do docker port $i | awk '/^9200/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
 if [ -z "$last_http_port" ]; then
   next_http_port=$(expr $base_port + 9200 + 1)
 else
@@ -34,7 +35,7 @@ fi
 echo $0: info: http port: $next_http_port
 
 # select next free transport port over $base_port
-last_transport_port=$(for i in $(docker ps -qf name=$name); do docker port $i | awk '/^9300/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
+last_transport_port=$(for i in $(docker ps -qf label=$label); do docker port $i | awk '/^9300/ {print $NF}' | cut -d: -f2; done | sort -n | tail -1)
 if [ -z "$last_transport_port" ]; then
   next_transport_port=$(expr $base_port + 9300 + 1)
 else
@@ -66,7 +67,7 @@ echo $0: info: starting container $next_container
 command="
 docker run -d
   --name $next_container
-  --label $name
+  --label $label
   -p $next_http_port:9200
   -p $next_transport_port:9300
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
