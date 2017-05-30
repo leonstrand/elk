@@ -12,7 +12,7 @@ directory=$(pwd)
 # determine container name
 name='elasticsearch-master'
 label='elasticsearch'
-last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
+last_container=$(docker ps -af name=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
 else
