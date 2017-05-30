@@ -11,6 +11,7 @@ directory=$(pwd)
 
 # determine container name
 name='elasticsearch-master'
+label='elasticsearch'
 last_container=$(docker ps -af label=${name} | grep -v CONTAINER | awk '{print $NF}' | sort -V | tail -1)
 if [ -z "$last_container" ]; then
   next_container=${name}-1
@@ -66,7 +67,7 @@ echo $0: info: starting container $next_container
 command="
 docker run -d
   --name $next_container
-  --label $name
+  --label $label
   -p $next_http_port:9200
   -p $next_transport_port:9300
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
