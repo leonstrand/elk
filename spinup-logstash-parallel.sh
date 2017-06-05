@@ -32,7 +32,7 @@ echo
 echo
 echo $0: info: elasticsearch nodes passing consul check
 echo curl -sS $ip:8500/v1/catalog/service/elasticsearch-http?passing
-elasticsearch_hosts=$(curl -sS $ip:8500/v1/health/service/elasticsearch-http?passing | jq -jr '.[] | .Service | "\"" + .Address + ":" + "\(.Port)" + "\","' | sed 's/,$//')
+elasticsearch_hosts=$(curl -sS $ip:8500/v1/health/service/elasticsearch-http-data-ingest?passing | jq -jr '.[] | .Service | "\"" + .Address + ":" + "\(.Port)" + "\","' | sed 's/,$//')
 if [ -z "$elasticsearch_hosts" ]; then
   echo $0: fatal: could not find any elasticsearch host
   exit 1

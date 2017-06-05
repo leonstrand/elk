@@ -187,6 +187,45 @@ if curl $ip:$next_http_port 1>/dev/null 2>&1; then
   $next_http_port \
   $ip \
   $next_http_port)"
+
+  # register es http data ingest
+  echo
+  echo $0: info: registering elasticsearch http data ingest service with consul
+  echo curl -v --retry 7 --retry-delay 3 \
+  http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
+  -d "$(printf \''{
+    "ID":"%s",
+    "Name":"elasticsearch-http-data-ingest",
+    "Address":"%s",
+    "Port":%s,
+    "Check":{
+      "HTTP": "http://%s:%s",
+      "Interval": "10s"
+    }
+  }'\' \
+  elasticsearch-http-data-ingest-$ip:$next_http_port \
+  $ip \
+  $next_http_port \
+  $ip \
+  $next_http_port)"
+
+  curl -v --retry 7 --retry-delay 3 \
+  http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register \
+  -d "$(printf '{
+    "ID":"%s",
+    "Name":"elasticsearch-http-data-ingest",
+    "Address":"%s",
+    "Port":%s,
+    "Check":{
+      "HTTP": "http://%s:%s",
+      "Interval": "10s"
+    }
+  }' \
+  elasticsearch-http-data-ingest-$ip:$next_http_port \
+  $ip \
+  $next_http_port \
+  $ip \
+  $next_http_port)"
 fi
 
 echo
