@@ -86,6 +86,7 @@ docker run -d \
   -v $directory_data/logstash/$next_container/data:/usr/share/logstash/data \
   logstash \
   -f /config/
+  --log.level debug
 "
 echo $0: info: command:
 echo $command
