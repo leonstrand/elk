@@ -84,10 +84,11 @@ docker run -d \
   -v $directory/logstash/containers/$next_container/config:/config \
   -v $directory/logstash/logstash.yml:/etc/logstash/logstash.yml:ro \
   -v $directory_data/logstash/$next_container/data:/usr/share/logstash/data \
+  -v $directory/logstash/log4j2.properties:/etc/logstash/log4j2.properties:ro \
   logstash \
   -f /config/
-  --log.level debug
 "
+  #--log.level debug
 echo $0: info: command:
 echo $command
 result=$(eval $command)
