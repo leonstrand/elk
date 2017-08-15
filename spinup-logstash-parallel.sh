@@ -87,6 +87,7 @@ docker run -d \
   -v $directory/logstash/log4j2.properties:/etc/logstash/log4j2.properties:ro \
   logstash \
   -f /config/
+  --pipeline.unsafe_shutdown
 "
   #--log.level debug
 echo $0: info: command:
