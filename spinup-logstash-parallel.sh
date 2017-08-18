@@ -79,7 +79,7 @@ command="
 docker run -d \
   --name $next_container \
   -e LS_HEAP_SIZE=2048m \
-  -v /pai-logs:/pai-logs \
+  -v /elk/pai-logs/$server:/elk/pai-logs/$server \
   -v $directory/logstash/elasticsearch-template.json:/opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-output-elasticsearch-2.7.1-java/lib/logstash/outputs/elasticsearch/elasticsearch-template.json \
   -v $directory/logstash/containers/$next_container/config:/config \
   -v $directory/logstash/logstash.yml:/etc/logstash/logstash.yml:ro \
