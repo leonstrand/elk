@@ -67,6 +67,7 @@ docker run -d \
   elasticsearch \
   -Enetwork.bind_host=0.0.0.0 \
   -Enetwork.publish_host=$ip \
+  -Ehttp.publish_host=$ip \
   -Enode.name=$(hostname)-$next_container_elasticsearch_loadbalancer \
   -Enode.master=false \
   -Enode.data=false \
