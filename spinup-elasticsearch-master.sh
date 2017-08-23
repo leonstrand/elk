@@ -72,10 +72,11 @@ docker run -d
   -p $next_transport_port:9300
   -v $elasticsearch_indices_path/elasticsearch/$next_container/data:/usr/share/elasticsearch/data
   elasticsearch
-  -Enetwork.host=0.0.0.0
+  -Enetwork.bind_host=0.0.0.0
+  -Enetwork.publish_host=$ip
+  -Ehttp.publish_host=$ip
   -Enode.name=$(hostname)-$next_container
   -Ecluster.name=elasticsearch-mede
-  -Enetwork.publish_host=$ip
   -Ehttp.publish_port=$next_http_port
   -Etransport.publish_port=$next_transport_port
   -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts
