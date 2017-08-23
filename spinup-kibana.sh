@@ -65,13 +65,12 @@ docker run -d \
   -p $next_http_port:9200 \
   -p $next_transport_port:9300 \
   elasticsearch \
-  -Enetwork.host=0.0.0.0 \
+  -Enetwork.bind_host=0.0.0.0 \
+  -Enetwork.publish_host=$ip \
   -Enode.name=$(hostname)-$next_container_elasticsearch_loadbalancer \
   -Enode.master=false \
   -Enode.data=false \
   -Ecluster.name=$elasticsearch_cluster_name \
-  -Enetwork.publish_host=$ip \
-  -Ehttp.bind_host=$ip \
   -Ehttp.publish_port=$next_http_port \
   -Etransport.publish_port=$next_transport_port \
   -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts \
