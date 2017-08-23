@@ -71,6 +71,7 @@ docker run -d \
   -Enode.data=false \
   -Ecluster.name=$elasticsearch_cluster_name \
   -Enetwork.publish_host=$ip \
+  -Ehttp.bind_host=$ip \
   -Ehttp.publish_port=$next_http_port \
   -Etransport.publish_port=$next_transport_port \
   -Ediscovery.zen.ping.unicast.hosts=$unicast_hosts \
