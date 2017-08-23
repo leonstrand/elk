@@ -65,6 +65,7 @@ elasticsearch.url: 'http://REPLACE_ELASTICSEARCH_HOST:REPLACE_ELASTICSEARCH_PORT
 # Time in milliseconds to wait for responses from the back end or Elasticsearch. This value
 # must be a positive integer.
 #elasticsearch.requestTimeout: 30000
+elasticsearch.requestTimeout: 60000
 
 # List of Kibana client-side headers to send to Elasticsearch. To send *no* client-side
 # headers, set this value to [] (an empty list).
@@ -95,6 +96,7 @@ elasticsearch.url: 'http://REPLACE_ELASTICSEARCH_HOST:REPLACE_ELASTICSEARCH_PORT
 # Set the value of this setting to true to log all events, including system usage information
 # and all requests.
 #logging.verbose: false
+logging.verbose: true
 
 # Set the interval in milliseconds to sample system and process performance
 # metrics. Minimum is 100ms. Defaults to 5000.
